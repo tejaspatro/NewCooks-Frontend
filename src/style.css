@@ -1,0 +1,55 @@
+/* Light mode */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.page-content {
+  background-color: #ffffff;
+  color: #000000;
+  min-height: calc(100vh - 56px); /* Navbar height adjustment */
+  padding: 2rem;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Dark mode content */
+.page-content.dark-mode {
+  background-color: #5b0000; /* Comforting dark red */
+  color: #ffffff;
+}
+
+/* Links in dark mode */
+.page-content.dark-mode a {
+  color: #ffdf91; /* Light yellowish link color */
+}
+
+/* Remove the page-content padding on auth pages */
+.page-content.no-padding {
+  padding: 0;
+}
+
+.background-slide {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transform: scale(1);
+  transition: opacity 1s ease, transform 5s ease;
+  z-index: 0;
+}
+
+.background-slide.active {
+  opacity: 1;
+  transform: scale(1.1); /* zoom in */
+  z-index: 1;
+}
+
+/* Smooth background zoom */
+.login-bg {
+  transition: opacity 900ms ease-in-out, transform 12s linear;
+}
+
+
