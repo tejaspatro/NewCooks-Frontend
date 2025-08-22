@@ -91,3 +91,151 @@
   font-weight: 600;
 }
 
+/* 🌙 Dark mode overrides for recipe cards */
+.page-content.dark-mode .recipe-card {
+  box-shadow: 0 4px 8px rgba(255, 200, 150, 0.2);
+}
+
+/* .page-content.dark-mode .recipe-details {
+  background-color: #7a1c1c;
+  color: #fff8c6;
+} */
+
+
+/* .page-content.dark-mode .recipe-title {
+  color: #ffdf91; 
+} */
+
+.page-content.dark-mode .recipe-rating {
+  color: #ffcc80; 
+}
+
+ .recipe-carousel {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.recipe-main-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.4);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  padding: 6px;
+  cursor: pointer;
+}
+/*  
+.carousel-btn.left {
+  left: 10px;
+}
+
+.carousel-btn.right {
+  right: 10px;
+} */
+
+.recipe-main-image {
+  object-fit: contain;   /* Keeps aspect ratio */
+  max-height: 500px;     /* Adjust to make landscape smaller */
+  width: 100%;           /* Scale within carousel container */
+  margin: 0 auto;        /* Center image */
+}
+
+/* Common size for arrows */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50%;
+  background-size: 60% 60%;
+  background-repeat: no-repeat;
+  background-position: center;
+  transition: transform 0.25s ease, background-color 0.25s ease;
+}
+
+/* Light Mode (Black Arrows) */
+.carousel-control-prev-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='black' viewBox='0 0 8 8'%3E%3Cpath d='M5.5 0l-5 4 5 4V0z'/%3E%3C/svg%3E");
+  background-color: rgba(0, 0, 0, 0.2);
+}
+.carousel-control-next-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='black' viewBox='0 0 8 8'%3E%3Cpath d='M2.5 0l5 4-5 4V0z'/%3E%3C/svg%3E");
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Dark Mode (White Arrows) */
+.dark-mode .carousel-control-prev-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 8 8'%3E%3Cpath d='M5.5 0l-5 4 5 4V0z'/%3E%3C/svg%3E");
+  background-color: rgba(255, 255, 255, 0.2);
+}
+.dark-mode .carousel-control-next-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 8 8'%3E%3Cpath d='M2.5 0l5 4-5 4V0z'/%3E%3C/svg%3E");
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Hover effect ONLY on the icon itself */
+.carousel-control-prev-icon:hover,
+.carousel-control-next-icon:hover {
+  transform: scale(1.25);
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.dark-mode .carousel-control-prev-icon:hover,
+.dark-mode .carousel-control-next-icon:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.carousel-item img {
+  border-radius: 12px;   /* smooth corners */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); /* subtle shadow */
+  transition: transform 0.3s ease;
+}
+
+/* Optional: add a little zoom when hovered */
+.carousel-item img:hover {
+  transform: scale(1.02);
+}
+
+/* Fullscreen overlay */
+.fullscreen-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+
+/* Close button */
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 25px;
+  font-size: 2rem;
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 2000;
+}
+
+/* Fullscreen image */
+.fullscreen-img {
+  max-width: 90%;
+  max-height: 85vh;
+  border-radius: 12px;
+  object-fit: contain;
+  margin: auto;
+}

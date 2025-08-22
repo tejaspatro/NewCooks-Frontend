@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom"; // Added useNavigate
 import axiosApi from "../../api/axiosConfig";
 import "../recipe.css"; // Reuse the same CSS file
+import RecipeCard from "../../components/RecipeCard";
 
 export default function MyRecipesPage() {
   const { chefId } = useParams(); // Get chefId from the URL
@@ -18,7 +19,7 @@ export default function MyRecipesPage() {
         const response = await axiosApi.get(`/chef/${chefId}/recipes`);
         setRecipes(response.data);
       } catch (err) {
-        setError("Failed to fetch your recipes.");
+        setError("Failed to fetch your recipes. Please login again!!!");
         console.error(err);
       } finally {
         setLoading(false);
@@ -54,22 +55,13 @@ export default function MyRecipesPage() {
         <p className="text-center mt-5">No recipes added yet.</p>
       ) : (
         <div className="recipes-grid">
+
           {recipes.map((recipe) => (
-            <Link
-              to={`/chef/${chefId}/recipes/${recipe.recipeId}`}
+            <RecipeCard
               key={recipe.recipeId}
-              className="recipe-card-link"
-            >
-              <div className="recipe-card">
-                <img src={recipe.imageUrl} alt={recipe.title} className="recipe-image" />
-                <div className="recipe-details">
-                  <div className="recipe-rating">
-                    ⭐ {recipe.averageRating || "0"} ({recipe.totalRatings || 0} ratings)
-                  </div>
-                  <h3 className="recipe-title">{recipe.title}</h3>
-                </div>
-              </div>
-            </Link>
+              recipe={recipe}
+              linkTo={`/chef/${chefId}/recipes/${recipe.recipeId}`}
+            />
           ))}
         </div>
       )}

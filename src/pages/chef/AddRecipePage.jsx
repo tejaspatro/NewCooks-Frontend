@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axiosApi from "../../api/axiosConfig";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import Uploader from "../../components/Uploader";
 
 export default function AddRecipePage() {
   const [title, setTitle] = useState("");
@@ -10,13 +11,13 @@ export default function AddRecipePage() {
   const [utensils, setUtensils] = useState("");
   const [nutritionInfo, setNutritionInfo] = useState("");
   const [instructions, setInstructions] = useState("");
+  const [thumbnail, setThumbnail] = useState("");
+  const [images, setImages] = useState([]);
   const chefId = localStorage.getItem("chefId");
 
   const navigate = useNavigate();
 
-  const handleListChange = (setter) => (e) => {
-    setter(e.target.value);
-  };
+  const handleListChange = (setter) => (e) => setter(e.target.value);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,58 +27,57 @@ export default function AddRecipePage() {
       Swal.fire("Title Error", "Please enter a recipe title.", "error");
       return;
     }
-
     if (!description.trim()) {
       Swal.fire("Description Error", "Please enter a description.", "error");
       return;
     }
-
-    if (ingredients.includes(".")) {
+    if (!ingredients.trim() || ingredients.includes(".")) {
       Swal.fire("Ingredients Error", "Please separate ingredients with commas, not periods(.)", "error");
       return;
     }
-
-    if (utensils.includes(".")) {
+    if (!utensils.trim() || utensils.includes(".")) {
       Swal.fire("Utensils Error", "Please separate utensils with commas, not periods(.)", "error");
       return;
     }
-
-    if (instructions.includes(".")) {
+    if (!instructions.trim() || instructions.includes(".")) {
       Swal.fire("Instructions Error", "Please separate instructions with commas, not periods(.)", "error");
+      return;
+    }
+    if (!thumbnail) {
+      Swal.fire("Thumbnail Error", "Please upload a thumbnail image.", "error");
       return;
     }
 
     const payload = {
       title,
       description,
-      ingredients: ingredients.split(",").map((i) => i.trim()).filter(Boolean),
-      utensils: utensils.split(",").map((u) => u.trim()).filter(Boolean),
+      ingredients: ingredients.split(",").map(i => i.trim()).filter(Boolean),
+      utensils: utensils.split(",").map(u => u.trim()).filter(Boolean),
       nutritionInfo,
-      instructions: instructions.split(",").map((inst) => inst.trim()).filter(Boolean),
+      instructions: instructions.split(",").map(inst => inst.trim()).filter(Boolean),
+      thumbnail,
+      images
     };
 
     try {
-  await axiosApi.post(`/chef/${chefId}/recipes`, payload);
+      await axiosApi.post(`/chef/${chefId}/recipes`, payload);
 
-  Swal.fire({
-    icon: "success",
-    title: "Recipe saved!",
-    text: "Your recipe has been added successfully.",
-    confirmButtonText: "OK"
-  }).then((result) => {
-    if (result.isConfirmed) {
-      if (chefId) {
-        navigate(`/chef/${chefId}/recipes`);
-      } else {
-        navigate("/dashboard"); // fallback in case chefId missing
-      }
+      Swal.fire({
+        icon: "success",
+        title: "Recipe saved!",
+        text: "Your recipe has been added successfully.",
+        confirmButtonText: "OK"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate(chefId ? `/chef/${chefId}/recipes` : "/dashboard");
+        }
+      });
+    } catch (err) {
+      console.error(err);
+      const msg = err.response?.data?.message || err.response?.data || "Something went wrong while saving the recipe.";
+      Swal.fire("Error", msg, "error");
     }
-  });
-} catch (err) {
-  console.error(err);
-  Swal.fire("Error", "Something went wrong while saving the recipe.", "error");
-}};
-
+  };
 
   return (
     <div className="container mt-4">
@@ -113,31 +113,40 @@ export default function AddRecipePage() {
           <textarea className="form-control" value={instructions} onChange={handleListChange(setInstructions)} />
         </div>
 
+        <div className="mb-3">
+          <label className="form-label">Thumbnail Image</label>
+          <Uploader maxFiles={1} onUploadComplete={(urls) => setThumbnail(urls[0] || "")} />
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label">Additional Images</label>
+          <Uploader maxFiles={5} onUploadComplete={setImages} />
+        </div>
+
         <div className="d-flex justify-content-between">
           <button type="submit" className="btn btn-warning">Save Recipe</button>
           <button
-  type="button"
-  className="btn btn-danger"
-  onClick={() => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "Your changes will not be saved if you cancel.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, cancel it!",
-      cancelButtonText: "No, stay here"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        navigate(`/chef/${chefId}/recipes`);
-      }
-    });
-  }}
->
-  Cancel
-</button>
-
+            type="button"
+            className="btn btn-danger"
+            onClick={() => {
+              Swal.fire({
+                title: "Are you sure?",
+                text: "Your changes will not be saved if you cancel.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, cancel it!",
+                cancelButtonText: "No, stay here"
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  navigate(`/chef/${chefId}/recipes`);
+                }
+              });
+            }}
+          >
+            Cancel
+          </button>
         </div>
       </form>
     </div>

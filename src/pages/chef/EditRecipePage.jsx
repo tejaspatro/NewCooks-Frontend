@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosApi from "../../api/axiosConfig";
 import Swal from "sweetalert2";
+import Uploader from "../../components/Uploader";
 
 const EditRecipeDetailPage = () => {
     const { chefId, recipeId } = useParams();
@@ -14,6 +15,9 @@ const EditRecipeDetailPage = () => {
     const [nutrition, setNutrition] = useState("");
     const [instructions, setInstructions] = useState("");
     const [loading, setLoading] = useState(true);
+    const [thumbnail, setThumbnail] = useState("");
+    const [images, setImages] = useState([]);
+
 
     // Fetch recipe details on mount
     useEffect(() => {
@@ -24,8 +28,10 @@ const EditRecipeDetailPage = () => {
                 setDescription(res.data.description);
                 setIngredients(res.data.ingredients?.join(", ") || "");
                 setUtensils(res.data.utensils?.join(", ") || "");
-                setNutrition(res.data.nutrition || "");
+                setNutrition(res.data.nutritionInfo || "");
                 setInstructions(res.data.instructions?.join(", ") || "");
+                setThumbnail(res.data.thumbnail || "");
+                setImages(res.data.images || []);
             } catch (err) {
                 Swal.fire("Error", "Failed to load recipe details", "error");
             } finally {
@@ -39,14 +45,24 @@ const EditRecipeDetailPage = () => {
     const handleUpdate = async (e) => {
         e.preventDefault();
         try {
-            await axiosApi.put(`/chef/${chefId}/recipes/${recipeId}`, {
-                title,
-                description,
-                ingredients: ingredients.split(",").map((i) => i.trim()),
-                utensils: utensils.split(",").map((u) => u.trim()),
-                nutrition,
-                instructions: instructions.split(",").map((s) => s.trim()),
-            });
+            await axiosApi.put(
+                `/chef/${chefId}/recipes/${recipeId}`,
+                {
+                    title,
+                    description,
+                    ingredients: ingredients.split(",").map((i) => i.trim()),
+                    utensils: utensils.split(",").map((u) => u.trim()),
+                    nutrition,
+                    instructions: instructions.split(",").map((s) => s.trim()),
+                    thumbnail,
+                    images,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                }
+            );
 
             Swal.fire({
                 icon: "success",
@@ -54,10 +70,13 @@ const EditRecipeDetailPage = () => {
                 text: "Your recipe has been updated successfully!",
                 timer: 1500,
                 showConfirmButton: false,
-            }).then(() => navigate(`/chef/${chefId}/recipes/${recipeId}`));
-
+            }).then(() => navigate(`/chef/${chefId}/recipes/${recipeId}`), { replace: true });
         } catch (err) {
-            Swal.fire("Error", err.response?.data?.message || "Update failed", "error");
+            Swal.fire(
+                "Error",
+                err.response?.data?.message || "Update failed",
+                "error"
+            );
         }
     };
 
@@ -65,6 +84,7 @@ const EditRecipeDetailPage = () => {
 
     return (
         <div className="container mt-4">
+            
             <h2>Edit Recipe</h2>
             <form onSubmit={handleUpdate}>
                 <div className="mb-3">
@@ -123,14 +143,34 @@ const EditRecipeDetailPage = () => {
                         onChange={(e) => setInstructions(e.target.value)}
                     />
                 </div>
-                <button type="submit" className="btn btn-success">Update</button>
-                <button
-                    type="button"
-                    className="btn btn-secondary ms-2"
-                    onClick={() => navigate(`/chef/${chefId}/recipes/${recipeId}`)}
-                >
-                    Cancel
-                </button>
+                <div className="mb-3">
+                    <label className="form-label">Thumbnail Image</label>
+                    <Uploader maxFiles={1} defaultFiles={thumbnail ? [thumbnail] : []} onUploadComplete={(urls) => setThumbnail(urls[0] || "")} />
+                </div>
+
+                <div className="mb-3">
+  <label className="form-label">Additional Images</label>
+  <Uploader maxFiles={5} defaultFiles={images} onUploadComplete={setImages} />
+  <div className="form-text text-secondary">
+    You can upload up to <strong>5 images</strong>.
+  </div>
+</div>
+
+
+                <div className="d-flex justify-content-between mt-3">
+                    <button type="submit" className="btn btn-warning">
+                        Update
+                    </button>
+                    <button
+                        type="button"
+                        className="btn btn-danger"
+                        onClick={() => navigate(`/chef/${chefId}/recipes/${recipeId}`)}
+                    >
+                        Cancel
+                    </button>
+
+                </div>
+
             </form>
         </div>
     );
