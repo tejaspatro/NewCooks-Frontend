@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import "../pages/recipe.css"; // make sure this path is correct (adjust if needed)
+import recipeDefaultThumbnail from "../images/recipe_thumbnail.png"
+
 
 export default function RecipeCard({ recipe, linkTo }) {
     const navigate = useNavigate();
@@ -11,7 +13,7 @@ export default function RecipeCard({ recipe, linkTo }) {
         >
             <div className="recipe-card">
                 <img
-                    src={recipe.thumbnail || recipe.imageUrl || "/default.jpg"}
+                    src={recipe.thumbnail || recipe.imageUrl || recipeDefaultThumbnail}
                     alt={recipe.title}
                     className="recipe-image"
                 />

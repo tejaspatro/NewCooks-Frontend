@@ -46,6 +46,8 @@ export default function Navbar({ darkMode, setDarkMode }) {
   };
 
   return (
+    <>
+    <header>
     <nav className="navbar navbar-expand-lg navbar-dark" style={{ backgroundColor: "#d62828" }}>
       <div className="container-fluid">
         <Link className="navbar-brand fw-bold" to="/">NewCooks</Link>
@@ -106,5 +108,7 @@ export default function Navbar({ darkMode, setDarkMode }) {
         </div>
       </div>
     </nav>
+    </header>
+    </>
   );
 }

@@ -89,8 +89,9 @@ export default function BackgroundLayout({ darkMode, children }) {
                     className={`btn ${darkMode ? "btn-dark text-light" : "btn-light"}`}
                     style={{
                         pointerEvents: "auto",
-                        backgroundColor: darkMode ? "rgba(56, 1, 1, 0.86)" : "",
-                        borderColor: darkMode ? "rgba(56, 1, 1, 0.86)" : ""
+                        backgroundColor:"rgba(56, 1, 1, 0.86)",
+                        borderColor: "rgba(56, 1, 1, 0.86)",
+                        color: "white"
                     }}
                 >
                     🏠 Home
@@ -103,7 +104,7 @@ export default function BackgroundLayout({ darkMode, children }) {
                 style={{ minHeight: "100vh", position: "relative", zIndex: 2, padding: "1rem" }}
             >
                 <div className="card p-4 shadow-lg"
-                    style={{ width: "100%", maxWidth: "420px", backgroundColor: darkMode ? "rgba(56, 1, 1, 0.86)" : "rgba(255,255,255,0.93)", color: darkMode ? "#fff" : "#111" }}
+                    style={{ width: "100%", maxWidth: "420px", backgroundColor: "rgba(56, 1, 1, 0.86)", color:"#fff"  }}
                 >
                     {children}
                 </div>

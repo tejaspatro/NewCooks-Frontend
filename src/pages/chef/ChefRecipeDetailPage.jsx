@@ -90,7 +90,7 @@ export default function ChefRecipeDetailPage({ darkMode }) {
         {/* Go Back Button */}
         <div style={{ left: 0 }}>
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate(`/chef/${chefId}/recipes`)}
             className="btn btn-warning me-2"
             disabled={deleting}
           >

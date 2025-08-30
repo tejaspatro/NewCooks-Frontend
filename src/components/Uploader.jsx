@@ -1,131 +1,126 @@
-import React, { useState, useRef } from "react";
-import { uploadImageToCloudinary, removeImageFromCloudinary } from "../utils/uploadImage";
+import React, { useEffect, useRef, useState } from "react";
+import { uploadImageToCloudinary } from "../utils/uploadImage";
 import Swal from "sweetalert2";
 
-const Uploader = ({ maxFiles = 1, defaultFiles = [], onUploadComplete }) => {
-  const [files, setFiles] = useState(defaultFiles); // stores uploaded URLs
+const Uploader = ({
+  maxFiles = 1,
+  defaultFiles = [],
+  onUploadStart,
+  onUploadComplete,
+  onUploadRemove,
+  onDelete, // async(url) => Promise<boolean>
+}) => {
+  const [files, setFiles] = useState(defaultFiles);
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef(null);
 
-  // Handle selecting new files
-  const handleFileChange = async (e) => {
-    const selectedFiles = Array.from(e.target.files);
-    const remainingSlots = maxFiles - files.length;
+  // Keep files in sync with parent prop
+  useEffect(() => {
+    setFiles(defaultFiles || []);
+  }, [defaultFiles]);
 
-    if (remainingSlots <= 0) {
-      Swal.fire("Error", `You can upload maximum ${maxFiles} files.`, "error");
-      if (fileInputRef.current) fileInputRef.current.value = ""; // reset input
+  const handleFileChange = async (e) => {
+    const selected = Array.from(e.target.files || []);
+    const remaining = maxFiles - files.length;
+    if (remaining <= 0) {
+      Swal.fire("Limit reached", `Maximum ${maxFiles} images allowed.`, "info");
+      if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
-
-    const allowedFiles = selectedFiles.slice(0, remainingSlots);
-
+    const toUpload = selected.slice(0, remaining);
     setLoading(true);
-    let uploadedUrls = [];
-
+    onUploadStart && onUploadStart();
     try {
-      uploadedUrls = await Promise.all(
-        allowedFiles.map(async (file) => {
-          const data = await uploadImageToCloudinary(file);
-          return data.secure_url;
+      const uploadedUrls = await Promise.all(
+        toUpload.map(async (file) => {
+          const res = await uploadImageToCloudinary(file);
+          return res.secure_url;
         })
       );
+      const next = [...files, ...uploadedUrls];
+      setFiles(next);
+      onUploadComplete && onUploadComplete(next);
     } catch (err) {
-      console.error("Upload failed:", err);
-      Swal.fire("Upload Error", "Failed to upload some images.", "error");
+      console.error(err);
+      Swal.fire("Upload Error", "Some images failed to upload.", "error");
+    } finally {
+      setLoading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
-
-    const newFiles = [...files, ...uploadedUrls];
-    setFiles(newFiles);
-    onUploadComplete && onUploadComplete(newFiles);
-    setLoading(false);
-
-    if (fileInputRef.current) fileInputRef.current.value = ""; // clear "No file chosen"
   };
 
-  // Handle removing uploaded files
   const handleRemove = async (index) => {
-    const urlToRemove = files[index];
-    try {
-      const urlObj = new URL(urlToRemove);
-      const pathParts = urlObj.pathname.split("/");
-      const fileName = pathParts[pathParts.length - 1];
-      const publicId = fileName.substring(0, fileName.lastIndexOf(".")) || fileName;
-
-      await removeImageFromCloudinary(publicId);
-    } catch (err) {
-      console.warn("Could not remove from cloud, removing locally only.");
+    const url = files[index];
+    // Confirm backend deletion first (for already-uploaded images)
+    if (onDelete) {
+      try {
+        const ok = await onDelete(url);
+        if (!ok) return;
+      } catch (e) {
+        console.error(e);
+        Swal.fire("Delete failed", "Could not delete this image right now.", "error");
+        return;
+      }
     }
-
-    const newFiles = files.filter((_, i) => i !== index);
-    setFiles(newFiles);
-    onUploadComplete && onUploadComplete(newFiles);
-
-    if (fileInputRef.current) fileInputRef.current.value = "";
+    const next = files.filter((_, i) => i !== index);
+    setFiles(next);
+    onUploadComplete && onUploadComplete(next);
+    onUploadRemove && onUploadRemove(url);
   };
 
   return (
     <div>
-      {/* Custom button instead of default file input */}
       <button
         type="button"
         className="btn btn-warning mb-2"
-        onClick={() => fileInputRef.current.click()}
+        onClick={() => fileInputRef.current?.click()}
+        disabled={files.length >= maxFiles || loading}
       >
-        {maxFiles > 1 ? "Choose Files" : "Choose File"}
+        {loading ? "Uploading..." : maxFiles > 1 ? "Choose Files" : "Choose File"}
       </button>
-
-      {/* Hidden input */}
       <input
         type="file"
-        multiple={maxFiles > 1}
-        onChange={handleFileChange}
-        ref={fileInputRef}
         accept="image/*"
+        multiple={maxFiles > 1}
+        ref={fileInputRef}
+        onChange={handleFileChange}
         style={{ display: "none" }}
       />
-
-      {loading && <p>Uploading...</p>}
-
-      {/* Preview images */}
-      <div style={{ display: "flex", gap: "10px", marginTop: "10px", flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: 10, marginTop: 10, flexWrap: "wrap" }}>
         {files.map((url, i) => (
-          <div key={i} style={{ position: "relative" }}>
+          <div key={url + i} style={{ position: "relative" }}>
             <img
               src={url}
-              alt={`upload-${i}`}
+              alt={`img-${i}`}
               width={100}
               height={100}
-              style={{ objectFit: "cover", borderRadius: "6px" }}
+              style={{ objectFit: "cover", borderRadius: 6 }}
             />
             <button
               type="button"
               onClick={() => handleRemove(i)}
               style={{
                 position: "absolute",
-                top: -5,
-                right: -5,
-                background: "red",
-                color: "white",
-                border: "none",
+                top: -6,
+                right: -6,
+                width: 22,
+                height: 22,
                 borderRadius: "50%",
+                border: "none",
                 cursor: "pointer",
-                width: 20,
-                height: 20,
-                fontSize: 12,
+                background: "#dc3545",
+                color: "#fff",
               }}
+              aria-label="Remove image"
+              title="Remove image"
             >
               ×
             </button>
           </div>
         ))}
       </div>
-
-      {/* Info when max reached */}
       {files.length >= maxFiles && (
-        <p style={{ color: "gray", marginTop: "5px" }}>
-          Maximum {maxFiles} files uploaded
-        </p>
+        <p className="text-secondary mt-2">Maximum {maxFiles} files uploaded</p>
       )}
     </div>
   );
