@@ -39,7 +39,7 @@ function AppContent({ darkMode, setDarkMode }) {
       <main className={`relative ${darkMode ? "dark-mode" : ""} ${hideNavbar ? "no-padding" : ""}`}>
         {!hideNavbar && <Navbar className="" darkMode={darkMode} setDarkMode={setDarkMode} />}
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          {/* <Route path="/" element={<HomePage />} /> */}
           <Route path="/login" element={<LoginPage darkMode={darkMode} />} />
           <Route path="/signup" element={<SignupPage darkMode={darkMode} />} />
           <Route path="/recipes" element={<RecipesPage darkMode={darkMode} />} />
@@ -69,7 +69,7 @@ function AppContent({ darkMode, setDarkMode }) {
           />
 
           {/* Chef homepage testing  */},
-          <Route path="/chefhero" element={<ChefHero darkMode={darkMode} />} />
+          <Route path="/" element={<ChefHero darkMode={darkMode} />} />
           {/* Navbar
 
           Hero/Profile Section (profile pic, welcome, stats)

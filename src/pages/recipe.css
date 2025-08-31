@@ -240,3 +240,39 @@
   object-fit: contain;
   margin: auto;
 }
+
+
+.recipe-page-bg {
+  background: linear-gradient(120deg, #ffe5d9, #ffcad4, #b5ead7);
+  min-height: 100vh;
+  padding: 3rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.recipe-card {
+  max-width: 1200px;
+  width: 100%;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.recipe-card:hover {
+  transform: translateY(-5px);
+}
+
+.carousel-container {
+  position: relative;
+  width: 100%;
+  height: 450px; /* fixed height */
+  overflow: hidden;
+}
+
+.carousel-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

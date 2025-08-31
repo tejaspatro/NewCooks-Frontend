@@ -72,7 +72,7 @@ export default function ChefRecipeDetailPage({ darkMode }) {
   if (!recipe) return <div className={`page-content${darkMode ? " dark-mode" : ""}`}>Recipe not found</div>;
 
   return (
-    <div className={`page-content${darkMode ? " dark-mode" : ""}`} style={{ position: "relative", paddingBottom: "2rem" }}>
+    <div className={`bg-main bg-dots page-content${darkMode ? " dark-mode" : ""}`} style={{ position: "relative", paddingBottom: "2rem" }}>
 
       {/* Top Controls: Go Back / Edit / Delete */}
       <div
@@ -86,6 +86,7 @@ export default function ChefRecipeDetailPage({ darkMode }) {
           padding: "0.5rem 1rem",
           zIndex: 1000,
         }}
+        className="sticky-controls"
       >
         {/* Go Back Button */}
         <div style={{ left: 0 }}>
@@ -97,6 +98,20 @@ export default function ChefRecipeDetailPage({ darkMode }) {
             ← Go Back
           </button>
         </div>
+
+        {/* Centered Title */}
+        <h1
+          className={`${darkMode ? "text-deep-yellow" : "text-danger"}`}
+          style={{
+            fontSize: "2.5rem",
+            fontWeight: "bold",
+            margin: 0,
+            textAlign: "center",
+            flex: 1,
+          }}
+        >
+          {recipe.title}
+        </h1>
 
         {/* Edit/Delete Buttons */}
         <div>

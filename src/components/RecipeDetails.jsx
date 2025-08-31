@@ -1,17 +1,42 @@
 import React, { useState } from "react";
-import 'bootstrap-icons/font/bootstrap-icons.css';
+import "bootstrap-icons/font/bootstrap-icons.css";
+import "./components.css";
+import { useEffect } from "react";
+import axiosApi from "../api/axiosConfig";
 
 export default function RecipeDetails({ recipe, darkMode }) {
   const [fullscreen, setFullscreen] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [ratingsData, setRatingsData] = useState({
+    average: 0,
+    total: 0,
+    counts: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 },
+  });
 
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-  };
+  useEffect(() => {
+    async function fetchRatings() {
+      try {
+        const res = await axiosApi.get(`/recipes/rating/${recipe.recipeId}`);
+        const data = res.data; // { average, total, counts }
 
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-  };
+        setRatingsData({
+          average: data.average || 0,
+          total: data.total || 0,
+          counts: data.counts || { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 },
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    if (recipe?.recipeId) fetchRatings();
+  }, [recipe?.recipeId]);
+
+
+  const ratingPercentages = {};
+  for (let i = 1; i <= 5; i++) {
+    ratingPercentages[i] = ratingsData.total ? (ratingsData.counts[i] / ratingsData.total) * 100 : 0;
+  }
+
 
   if (!recipe) return null;
 
@@ -21,204 +46,348 @@ export default function RecipeDetails({ recipe, darkMode }) {
     images.push(...recipe.images);
   }
 
+  // Wrapper Card Component
+  const DiagonalCard = ({ children, index, darkMode }) => (
+    <div
+      className={`card card-glow card-glow-float shadow-lg p-4 mt-4 rounded-3 ${darkMode ? "bg-dark-glow card-grid-overlay" : "bg-light-red card-grid-overlay"
+        }`}
+    >
+      {/* Auto diagonal glow */}
+      {index % 2 === 0 ? (
+        <>
+          <span className="glow-float glow-float-br"></span>
+          <span className="glow-corner glow-tl"></span>
+        </>
+      ) : (
+        <>
+          <span className="glow-float glow-float-bl"></span>
+          <span className="glow-corner glow-tr"></span>
+        </>
+      )}
+      {children}
+    </div>
+  );
+
   return (
-    <div className={`container my-5`}>
-      <h1 className={`text-center mb-4 ${darkMode ? "text-warning" : "text-danger"}`} style={{ fontSize: "2.5rem", fontWeight: "bold" }}>{recipe.title}</h1>
+    <>
+      {/* Recipe Title */}
+      {/* <h1
+        className={`text-center mb-4 ${darkMode ? "text-deep-yellow" : "text-danger"
+          }`}
+        style={{ fontSize: "2.5rem", fontWeight: "bold" }}
+      >
+        {recipe.title}
+      </h1> */}
 
-      <div className={`card shadow-lg mb-4 rounded-3 ${darkMode ? "bg-dark text-white" : "bg-white text-dark"}`} style={{ overflow: "hidden" }}>
-        <div className="card-body p-0">
-          <div className="position-relative">
-            {images.length > 0 ? (
-              <>
+      {/* Main card with split layout */}
+      <
+        >
+        <DiagonalCard index={1} darkMode={darkMode}>
+          <>
+            <div className="row g-0">
+              {/* Left side: Image carousel */}
+              <div className="col-md-6 d-flex flex-column">
                 <div
-                  id="recipeCarousel"
-                  className="carousel slide"
-                  data-bs-interval="false"
+                  className="position-relative w-100 overflow-hidden"
+                  style={{ aspectRatio: "16/9" }}
                 >
-                  <div className="carousel-inner">
-                    {images.map((img, idx) => (
-                      <div
-                        key={idx}
-                        className={`carousel-item ${idx === 0 ? "active" : ""}`}
-                      >
-                        <img
-                          src={img}
-                          alt={`Recipe Image ${idx + 1}`}
-                          className="d-block w-100"
-                          style={{ aspectRatio: "4/3", objectFit: "cover", cursor: "pointer" }}
-                          onClick={() => setFullscreen(true)}
-                        />
+                  {images.length > 0 ? (
+                    <div
+                      id="recipeCarousel"
+                      className="carousel slide h-100"
+                      data-bs-interval="false"
+                    >
+                      <div className="carousel-inner h-100">
+                        {images.map((img, idx) => (
+                          <div
+                            key={idx}
+                            className={`carousel-item h-100 ${idx === 0 ? "active" : ""
+                              }`}
+                          >
+                            <img
+                              src={img}
+                              alt={`Recipe ${idx + 1}`}
+                              className="d-block w-100 h-100"
+                              style={{
+                                objectFit: "cover",
+                                cursor: "pointer",
+                              }}
+                              onClick={() => setFullscreen(true)}
+                            />
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-
-                  {images.length > 1 && (
-                    <>
-                      <button
-                        className="carousel-control-prev"
-                        type="button"
-                        data-bs-target="#recipeCarousel"
-                        data-bs-slide="prev"
-                      >
-                        <i className="bi bi-chevron-left fs-1" style={{ color: "cyan" }}></i>
-                        <span className="visually-hidden">Previous</span>
-                      </button>
-                      <button
-                        className="carousel-control-next"
-                        type="button"
-                        data-bs-target="#recipeCarousel"
-                        data-bs-slide="next"
-                      >
-                        <i className="bi bi-chevron-right fs-1" style={{ color: "cyan" }}></i>
-                        <span className="visually-hidden">Next</span>
-                      </button>
-
-                    </>
+                      {images.length > 1 && (
+                        <>
+                          <button
+                            className="carousel-control-prev"
+                            type="button"
+                            data-bs-target="#recipeCarousel"
+                            data-bs-slide="prev"
+                          >
+                            <i
+                              className="bi bi-chevron-left fs-1"
+                              style={{ color: "#FFD700" }}
+                            ></i>
+                            <span className="visually-hidden">Previous</span>
+                          </button>
+                          <button
+                            className="carousel-control-next"
+                            type="button"
+                            data-bs-target="#recipeCarousel"
+                            data-bs-slide="next"
+                          >
+                            <i
+                              className="bi bi-chevron-right fs-1"
+                              style={{ color: "#FFD700" }}
+                            ></i>
+                            <span className="visually-hidden">Next</span>
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="p-3 d-flex align-items-center justify-content-center h-100">
+                      <p className="text-center">No image available</p>
+                    </div>
                   )}
                 </div>
+              </div>
 
-                {fullscreen && (
-                  <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.85)' }}>
-                    <div className="modal-dialog modal-fullscreen">
-                      <div className="modal-content bg-transparent border-0 d-flex align-items-center justify-content-center">
-                        <button
-                          type="button"
-                          className="btn-close btn-close-white position-absolute top-0 end-0 m-3 z-3"
-                          onClick={() => setFullscreen(false)}
-                          aria-label="Close"
-                        ></button>
-                        <div
-                          id="fullscreenCarousel"
-                          className="carousel slide w-75"
-                          data-bs-interval="false"
-                        >
-                          <div className="carousel-inner">
-                            {images.map((img, idx) => (
-                              <div
-                                key={idx}
-                                className={`carousel-item ${idx === 0 ? "active" : ""}`}
-                              >
-                                <img
-                                  src={img}
-                                  alt={`Fullscreen ${idx + 1}`}
-                                  className="d-block w-100"
-                                  style={{ objectFit: "contain", maxHeight: "90vh" }}
-                                />
-                              </div>
-                            ))}
-                          </div>
-                          {images.length > 1 && (
-                            <>
-                              <button
-                                className="carousel-control-prev"
-                                type="button"
-                                data-bs-target="#fullscreenCarousel"
-                                data-bs-slide="prev"
-                              >
-                                <i className="bi bi-chevron-left fs-1" style={{ color: "cyan" }}></i>
-                                <span className="visually-hidden">Previous</span>
-                              </button>
-                              <button
-                                className="carousel-control-next"
-                                type="button"
-                                data-bs-target="#fullscreenCarousel"
-                                data-bs-slide="next"
-                              >
-                                <i className="bi bi-chevron-right fs-1" style={{ color: "cyan" }}></i>
-                                <span className="visually-hidden">Next</span>
-                              </button>
+              {/* Right side: Description + Nutrition */}
+              <div className="col-md-6 p-4 d-flex flex-column">
+                <section className="mb-4 flex-grow-1">
+                  <h3 className="mb-2 text-deep-yellow">Description</h3>
+                  <p>{recipe.description}</p>
+                </section>
 
-                            </>
-                          )}
-                        </div>
-                      </div>
+                <section className="mt-auto">
+                  <h3 className="mb-2 text-deep-yellow">Nutrition Information</h3>
+                  <p>{recipe.nutritionInfo}</p>
+                </section>
+              </div>
+            </div>
+          </>
+        </DiagonalCard>
+      </>
+
+      {/* Fullscreen Modal */}
+      {fullscreen && (
+        <div
+          className="modal d-block"
+          tabIndex="-1"
+          style={{ backgroundColor: "rgba(0,0,0,0.85)" }}
+        >
+          <div className="modal-dialog modal-fullscreen">
+            <div className="modal-content bg-transparent border-0 d-flex align-items-center justify-content-center">
+              <button
+                type="button"
+                className="btn-close btn-close-white position-absolute top-0 end-0 m-3 z-3"
+                onClick={() => setFullscreen(false)}
+                aria-label="Close"
+              ></button>
+
+              <div
+                id="fullscreenCarousel"
+                className="carousel slide w-75"
+                data-bs-interval="false"
+              >
+                <div className="carousel-inner">
+                  {images.map((img, idx) => (
+                    <div
+                      key={idx}
+                      className={`carousel-item ${idx === 0 ? "active" : ""}`}
+                    >
+                      <img
+                        src={img}
+                        alt={`Fullscreen ${idx + 1}`}
+                        className="d-block w-100"
+                        style={{ objectFit: "contain", maxHeight: "90vh" }}
+                      />
                     </div>
-                  </div>
+                  ))}
+                </div>
+
+                {images.length > 1 && (
+                  <>
+                    {/* Custom Previous Button */}
+                    <button
+                      className="carousel-control-prev"
+                      type="button"
+                      data-bs-target="#fullscreenCarousel"
+                      data-bs-slide="prev"
+                    >
+                      <i
+                        className="bi bi-chevron-left fs-1"
+                        style={{ color: "#FFD700" }}
+                      ></i>
+                      <span className="visually-hidden">Previous</span>
+                    </button>
+
+                    {/* Custom Next Button */}
+                    <button
+                      className="carousel-control-next"
+                      type="button"
+                      data-bs-target="#fullscreenCarousel"
+                      data-bs-slide="next"
+                    >
+                      <i
+                        className="bi bi-chevron-right fs-1"
+                        style={{ color: "#FFD700" }}
+                      ></i>
+                      <span className="visually-hidden">Next</span>
+                    </button>
+                  </>
                 )}
-              </>
-            ) : (
-              <p className="p-3 text-center">No image available</p>
-            )}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className={`card shadow-lg p-4 mb-4 rounded-3 ${darkMode ? "bg-dark text-white" : "bg-white text-dark"}`}>
-        <section className="mb-4">
-          <h3 className="mb-2 text-warning">Description</h3>
-          <p>{recipe.description}</p>
-        </section>
-      </div>
+      )}
 
-      <div className={`card shadow-lg p-4 mb-4 rounded-3 ${darkMode ? "bg-dark text-white" : "bg-white text-dark"}`}>
-        <div className="row g-4">
-          <section className="col-md-6">
-            <h3 className="mb-2 text-warning">Ingredients</h3>
+      {/* Sections below */}
+      <div className="row g-4 mt-4">
+        {/* Ingredients */}
+        <div className="col-md-6">
+          <DiagonalCard index={0} darkMode={darkMode}>
+            <h3 className="mb-2 text-deep-yellow">Ingredients</h3>
             <ul className="list-group">
               {recipe.ingredients?.map((ing, idx) => (
-                <li key={idx} className={`list-group-item d-flex align-items-center ${darkMode ? "text-white" : "text-dark"}`} style={{ backgroundColor: "inherit", border: "1px solid #ffdf91" }}>
-                  <i className="bi bi-check-circle-fill text-warning me-2"></i>
+                <li
+                  key={idx}
+                  className={`list-group-item d-flex align-items-center ${darkMode ? "text-white" : "text-dark"
+                    }`}
+                  style={{
+                    backgroundColor: "inherit",
+                    border: "1px solid #ffdf91",
+                  }}
+                >
+                  <i className="bi bi-check-circle-fill text-deep-yellow me-2"></i>
                   <span>{ing}</span>
                 </li>
               ))}
             </ul>
-          </section>
+          </DiagonalCard>
+        </div>
 
-          <section className="col-md-6">
-            <h3 className="mb-2 text-warning">Utensils</h3>
+        {/* Utensils */}
+        <div className="col-md-6">
+          <DiagonalCard index={1} darkMode={darkMode}>
+            <h3 className="mb-2 text-deep-yellow">Utensils</h3>
             <ul className="list-group">
               {recipe.utensils?.map((ut, idx) => (
-                <li key={idx} className={`list-group-item d-flex align-items-center ${darkMode ? "text-white" : "text-dark"}`} style={{ backgroundColor: "inherit", border: "1px solid #ffdf91" }}>
-                  <i className="bi bi-tools text-warning me-2"></i>
+                <li
+                  key={idx}
+                  className={`list-group-item d-flex align-items-center ${darkMode ? "text-white" : "text-dark"
+                    }`}
+                  style={{
+                    backgroundColor: "inherit",
+                    border: "1px solid #ffdf91",
+                  }}
+                >
+                  <i className="bi bi-tools text-deep-yellow me-2"></i>
                   <span>{ut}</span>
                 </li>
               ))}
             </ul>
-          </section>
+          </DiagonalCard>
         </div>
       </div>
 
-      <div className={`card shadow-lg p-4 mb-4 rounded-3 ${darkMode ? "bg-dark text-white" : "bg-white text-dark"}`}>
-        <section className="mb-4">
-          <h3 className="mb-2 text-warning">Nutrition Information</h3>
-          <p>{recipe.nutritionInfo}</p>
-        </section>
-      </div>
+      {/* Instructions */}
+      <DiagonalCard index={2} darkMode={darkMode}>
+        <h3 className="mb-2 text-deep-yellow">Instructions</h3>
+        <ol className="list-group list-group-numbered">
+          {recipe.instructions?.map((step, idx) => (
+            <li
+              key={idx}
+              className={`list-group-item ${darkMode ? "text-white" : "text-dark"
+                }`}
+              style={{
+                backgroundColor: "inherit",
+                border: "1px solid #ffdf91",
+              }}
+            >
+              {step}
+            </li>
+          ))}
+        </ol>
+      </DiagonalCard>
 
-      <div className={`card shadow-lg p-4 mb-4 rounded-3 ${darkMode ? "bg-dark text-white" : "bg-white text-dark"}`}>
-        <section className="mb-4">
-          <h3 className="mb-2 text-warning">Instructions</h3>
-          <ol className="list-group list-group-numbered">
-            {recipe.instructions?.map((step, idx) => (
-              <li key={idx} className={`list-group-item ${darkMode ? "text-white" : "text-dark"}`} style={{ backgroundColor: "inherit", border: "1px solid #ffdf91" }}>
-                {step}
+      {/* Rating */}
+      <DiagonalCard index={3} darkMode={darkMode}>
+        <h3 className="text-center mb-3 text-deep-yellow">Ratings</h3>
+
+        <div className="d-flex flex-wrap" style={{ minHeight: "200px" }}>
+          {/* Left: Star + Average */}
+          <div
+            className="col-12 col-md-6 d-flex align-items-center justify-content-center mb-3 mb-md-0"
+            style={{ borderRight: "1px solid #FFD700", paddingRight: "1rem" }}
+          >
+            <i
+              className="bi bi-star-fill"
+              style={{
+                color: "#FFD700",
+                fontSize: "8vw", // scales with viewport width
+                maxHeight: "80%",
+                lineHeight: 1,
+                marginRight: "1rem",
+              }}
+            ></i>
+            <div className="d-flex flex-column justify-content-center align-items-center" style={{ height: "80%" }}>
+              <h3 className="mb-1">Average Rating</h3>
+              <h5 className="mb-0">{ratingsData.average.toFixed(1)} / {ratingsData.total} Ratings</h5>
+            </div>
+
+          </div>
+
+          {/* Right: Bars */}
+          <div className="col-12 col-md-6 d-flex flex-column justify-content-center ps-md-3">
+            {[5, 4, 3, 2, 1].map(star => (
+              <div key={star} className="d-flex align-items-center mb-2">
+                <span className="me-2">{star} ⭐</span>
+                <div className="flex-grow-1 bg-secondary rounded position-relative" style={{ height: "20px", minWidth: "50px" }}>
+                  <div
+                    className="bg-warning rounded"
+                    style={{ width: `${ratingPercentages[star]}%`, height: "100%" }}
+                  ></div>
+                  <span style={{ position: "absolute", right: "5px", top: 0, fontSize: "0.8rem" }}>
+                    {ratingsData.counts[star] || 0}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </DiagonalCard>
+
+
+
+      {/* Reviews */}
+      <DiagonalCard index={4} darkMode={darkMode}>
+        <h3 className="mb-2 text-deep-yellow">Reviews</h3>
+        {recipe.reviews && recipe.reviews.length > 0 ? (
+          <ul className="list-group">
+            {recipe.reviews.map((rev, idx) => (
+              <li
+                key={idx}
+                className={`list-group-item ${darkMode ? "text-white" : "text-dark"
+                  }`}
+                style={{
+                  backgroundColor: "inherit",
+                  border: "1px solid #ffdf91",
+                }}
+              >
+                <strong>{rev.user}:</strong> {rev.comment}
               </li>
             ))}
-          </ol>
-        </section>
-      </div>
+          </ul>
+        ) : (
+          <p>No reviews yet. Be the first to review!</p>
+        )}
+      </DiagonalCard>
 
-      <div className={`card shadow-lg p-4 mb-4 rounded-3 ${darkMode ? "bg-dark text-white" : "bg-white text-dark"}`}>
-        <section className="mb-2">
-          <h3 className="mb-2 text-warning">Rating</h3>
-          <p>{recipe.rating ? `${recipe.rating} ⭐` : "No ratings yet"}</p>
-        </section>
-
-        <section>
-          <h3 className="mb-2 text-warning">Reviews</h3>
-          {recipe.reviews && recipe.reviews.length > 0 ? (
-            <ul className="list-group">
-              {recipe.reviews.map((rev, idx) => (
-                <li key={idx} className={`list-group-item ${darkMode ? "text-white" : "text-dark"}`} style={{ backgroundColor: "inherit", border: "1px solid #ffdf91" }}>
-                  <strong>{rev.user}:</strong> {rev.comment}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No reviews yet. Be the first to review!</p>
-          )}
-        </section>
-      </div>
-    </div>
+    </>
   );
-};
+}

@@ -12,11 +12,20 @@ export default function Navbar({ darkMode, setDarkMode }) {
 
   // Sync when localStorage changes
   useEffect(() => {
-    setToken(localStorage.getItem("token"));
-    setRole(localStorage.getItem("role"));
-    setChefId(localStorage.getItem("chefId"));
+    const handleStorageChange = () => {
+      setToken(localStorage.getItem("token"));
+      setRole(localStorage.getItem("role"));
+      setChefId(localStorage.getItem("chefId"));
+    };
+    
+    window.addEventListener("storage", handleStorageChange);
+    
+    // Cleanup the event listener when the component unmounts
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
   }, []);
-
+  
   const handleLogout = () => {
     Swal.fire({
       title: "Are you sure?",
