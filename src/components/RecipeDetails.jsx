@@ -3,9 +3,12 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import "./components.css";
 import { useEffect } from "react";
 import axiosApi from "../api/axiosConfig";
+import HoverCardPortal from "./HoverReviewCardPortal";
+import placeHolderImg from "../images/Profile_avatar_placeholder_large.png";
 
 export default function RecipeDetails({ recipe, darkMode }) {
   const [fullscreen, setFullscreen] = useState(false);
+  const [reviewsData, setReviewsData] = useState([]);
   const [ratingsData, setRatingsData] = useState({
     average: 0,
     total: 0,
@@ -31,6 +34,21 @@ export default function RecipeDetails({ recipe, darkMode }) {
     if (recipe?.recipeId) fetchRatings();
   }, [recipe?.recipeId]);
 
+  useEffect(() => {
+    async function fetchReviews() {
+      if (!recipe?.recipeId) return;
+
+      try {
+        const res = await axiosApi.get(`/chef/recipes/${recipe.recipeId}/reviews`);
+        setReviewsData(res.data); // expects array of { user, comment }
+      } catch (err) {
+        console.error("Failed to fetch reviews", err);
+        setReviewsData([]);
+      }
+    }
+
+    fetchReviews();
+  }, [recipe?.recipeId]);
 
   const ratingPercentages = {};
   for (let i = 1; i <= 5; i++) {
@@ -95,7 +113,9 @@ export default function RecipeDetails({ recipe, darkMode }) {
                     <div
                       id="recipeCarousel"
                       className="carousel slide h-100"
-                      data-bs-interval="false"
+                      data-bs-ride="carousel"
+                      data-bs-interval="4000"
+                      data-bs-pause="hover"
                     >
                       <div className="carousel-inner h-100">
                         {images.map((img, idx) => (
@@ -147,9 +167,18 @@ export default function RecipeDetails({ recipe, darkMode }) {
                       )}
                     </div>
                   ) : (
-                    <div className="p-3 d-flex align-items-center justify-content-center h-100">
+                    <div
+                      className="p-3 d-flex align-items-center justify-content-center h-100"
+                      style={{
+                        backgroundColor: "rgba(255, 255, 255, 0.2)", // semi-transparent
+                        backdropFilter: "blur(8px)",                 // blur effect
+                        WebkitBackdropFilter: "blur(8px)",           // for Safari
+                        borderRadius: "8px"                           // optional: rounded corners
+                      }}
+                    >
                       <p className="text-center">No image available</p>
                     </div>
+
                   )}
                 </div>
               </div>
@@ -190,7 +219,9 @@ export default function RecipeDetails({ recipe, darkMode }) {
               <div
                 id="fullscreenCarousel"
                 className="carousel slide w-75"
-                data-bs-interval="false"
+                data-bs-ride="carousel"
+                data-bs-interval="4000"
+                data-bs-pause="hover"
               >
                 <div className="carousel-inner">
                   {images.map((img, idx) => (
@@ -251,7 +282,7 @@ export default function RecipeDetails({ recipe, darkMode }) {
         {/* Ingredients */}
         <div className="col-md-6">
           <DiagonalCard index={0} darkMode={darkMode}>
-            <h3 className="mb-2 text-deep-yellow">Ingredients</h3>
+            <h3 className="mb-2 text-deep-yellow text-center">Ingredients</h3>
             <ul className="list-group">
               {recipe.ingredients?.map((ing, idx) => (
                 <li
@@ -263,7 +294,7 @@ export default function RecipeDetails({ recipe, darkMode }) {
                     border: "1px solid #ffdf91",
                   }}
                 >
-                  <i className="bi bi-check-circle-fill text-deep-yellow me-2"></i>
+                  <i className="fa-solid fa-seedling text-deep-yellow me-2"></i>
                   <span>{ing}</span>
                 </li>
               ))}
@@ -274,7 +305,7 @@ export default function RecipeDetails({ recipe, darkMode }) {
         {/* Utensils */}
         <div className="col-md-6">
           <DiagonalCard index={1} darkMode={darkMode}>
-            <h3 className="mb-2 text-deep-yellow">Utensils</h3>
+            <h3 className="mb-2 text-deep-yellow text-center">Utensils</h3>
             <ul className="list-group">
               {recipe.utensils?.map((ut, idx) => (
                 <li
@@ -286,7 +317,7 @@ export default function RecipeDetails({ recipe, darkMode }) {
                     border: "1px solid #ffdf91",
                   }}
                 >
-                  <i className="bi bi-tools text-deep-yellow me-2"></i>
+                  <i className="fa-solid fa-kitchen-set text-deep-yellow me-2"></i>
                   <span>{ut}</span>
                 </li>
               ))}
@@ -297,7 +328,7 @@ export default function RecipeDetails({ recipe, darkMode }) {
 
       {/* Instructions */}
       <DiagonalCard index={2} darkMode={darkMode}>
-        <h3 className="mb-2 text-deep-yellow">Instructions</h3>
+        <h3 className="mb-2 text-deep-yellow ">Instructions</h3>
         <ol className="list-group list-group-numbered">
           {recipe.instructions?.map((step, idx) => (
             <li
@@ -328,11 +359,12 @@ export default function RecipeDetails({ recipe, darkMode }) {
             <i
               className="bi bi-star-fill"
               style={{
-                color: "#FFD700",
+                color: "#ffd500ff",
                 fontSize: "8vw", // scales with viewport width
                 maxHeight: "80%",
                 lineHeight: 1,
                 marginRight: "1rem",
+                opacity: "0.9"
               }}
             ></i>
             <div className="d-flex flex-column justify-content-center align-items-center" style={{ height: "80%" }}>
@@ -367,19 +399,55 @@ export default function RecipeDetails({ recipe, darkMode }) {
       {/* Reviews */}
       <DiagonalCard index={4} darkMode={darkMode}>
         <h3 className="mb-2 text-deep-yellow">Reviews</h3>
-        {recipe.reviews && recipe.reviews.length > 0 ? (
+        {reviewsData.length > 0 ? (
           <ul className="list-group">
-            {recipe.reviews.map((rev, idx) => (
+            {reviewsData.map((rev, idx) => (
               <li
                 key={idx}
-                className={`list-group-item ${darkMode ? "text-white" : "text-dark"
-                  }`}
-                style={{
-                  backgroundColor: "inherit",
-                  border: "1px solid #ffdf91",
-                }}
+                className={`list-group-item ${darkMode ? "text-white" : "text-dark"}`}
+                style={{ backgroundColor: "inherit", border: "1px solid #ffdf91" }}
               >
-                <strong>{rev.user}:</strong> {rev.comment}
+                <div className="d-flex align-items-start">
+                  {/* Avatar + Hover card (PORTAL) */}
+                  <HoverCardPortal
+                    darkmode={darkMode}
+                    renderContent={() => (
+                      <div>
+                        <img
+                          src={rev.profilePicture || placeHolderImg}
+                          alt={rev.userName || "User"}
+                          className="review-tooltip-avatar"
+                        />
+                        <p className="review-tooltip-name">{rev.userName || "Anonymous"}</p>
+                        <p className="review-tooltip-about">
+                          {rev.aboutMe || "No details"}
+                        </p>
+                      </div>
+                    )}
+                  >
+                    <img
+                      src={rev.profilePicture || placeHolderImg}
+                      alt={rev.userName || "User"}
+                      className="rounded-circle"
+                      style={{
+                        width: "60px",
+                        height: "60px",
+                        objectFit: "cover",
+                        cursor: "pointer",
+                        borderRadius: "100%",
+                        border: "3px solid #ff8d45ff",
+                      }}
+                    />
+                  </HoverCardPortal>
+
+                  {/* Text content */}
+                  <div className="flex-grow-1 ms-3">
+                    <strong>{rev.userName || "Anonymous"}</strong>
+                    <p className="mb-0" style={{ marginTop: "0.25rem" }}>
+                      {rev.reviewText}
+                    </p>
+                  </div>
+                </div>
               </li>
             ))}
           </ul>
@@ -387,6 +455,11 @@ export default function RecipeDetails({ recipe, darkMode }) {
           <p>No reviews yet. Be the first to review!</p>
         )}
       </DiagonalCard>
+
+
+
+
+
 
     </>
   );

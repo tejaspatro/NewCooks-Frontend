@@ -1,24 +1,64 @@
-
+/* --- PAGE BACKGROUND --- */
 .profile-page {
+  position: relative;
   display: flex;
   justify-content: center;
+  align-items: flex-start; /* Align content from top instead of centering vertically */
   padding: 2rem;
+  padding-top: 100px; /* Adjust this to match your navbar height */
+  min-height: 100vh;
+  overflow: hidden;
 }
 
+.profile-page::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: url("../../../src/images/Chef/chef_profile_bg.png");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: blur(5px);
+  transform: scale(1.1);
+  z-index: -2;
+}
+
+.profile-page::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(to bottom left, rgba(220, 20, 60, 0.4), rgba(218, 165, 32, 0.4));
+  z-index: -1;
+}
+
+/* Dark Mode overlay */
+.dark-mode .profile-page::after {
+  background: linear-gradient(to bottom left, rgba(218, 165, 32, 0.4), rgba(220, 20, 60, 0.4));
+}
+
+
+/* --- PROFILE CONTAINER --- */
 .profile-container {
   max-width: 600px;
   width: 100%;
-  background: #fff;
   padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 192, 203, 0.6); /* Light Mode Style */
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: #000;
 }
 
 .dark-mode .profile-container {
-  background: #2a2a2a;
+  background: rgba(139, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: #fff;
 }
 
+
+/* --- PROFILE IMAGE & DETAILS --- */
 .profile-image-wrapper {
   position: relative;
   width: 150px;
@@ -31,6 +71,7 @@
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
+  border: 3px solid rgba(255, 255, 255, 0.3);
 }
 
 .image-action-btn {
@@ -43,6 +84,9 @@
   border-radius: 50%;
   padding: 0.5rem;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .profile-details label {
@@ -57,14 +101,22 @@
   padding: 0.5rem;
   margin-top: 0.3rem;
   border-radius: 6px;
-  border: 1px solid #ccc;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.2);
+  color: #000;
 }
 
 .dark-mode .profile-details input,
 .dark-mode .profile-details textarea {
-  background: #3a3a3a;
-  border: 1px solid #555;
+  background: rgba(0, 0, 0, 0.2);
   color: #fff;
+}
+
+.profile-details input:focus,
+.profile-details textarea:focus {
+   outline: none;
+   border: 1px solid rgba(255, 255, 255, 0.5);
+   box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.1);
 }
 
 .profile-actions {
@@ -73,3 +125,7 @@
   margin-top: 1.5rem;
 }
 
+/* Center button when only one */
+.profile-actions:has(button:only-child) {
+  justify-content: center;
+}

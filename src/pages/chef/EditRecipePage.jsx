@@ -2,26 +2,38 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosApi from "../../api/axiosConfig";
 import Swal from "sweetalert2";
-import Uploader from "../../components/Uploader";
+import Uploader from "../../components/Uploader"; // Ensure you have the simplified Uploader.jsx from the previous answer
 
-const EditRecipeDetailPage = () => {
-  const { chefId, recipeId } = useParams();
+export default function EditRecipeDetailPage({ darkMode }) {
+  const { recipeId } = useParams();
   const navigate = useNavigate();
+
+  // State for form text fields
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [ingredients, setIngredients] = useState("");
   const [utensils, setUtensils] = useState("");
   const [nutrition, setNutrition] = useState("");
   const [instructions, setInstructions] = useState("");
-  const [thumbnail, setThumbnail] = useState("");
-  const [images, setImages] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [uploading, setUploading] = useState(false);
 
+  // State for image URLs that are already saved on the backend
+  const [thumbnailUrl, setThumbnailUrl] = useState("");
+  const [imageUrls, setImageUrls] = useState([]);
+
+  // State for NEW file objects selected by the user
+  const [newThumbnailFile, setNewThumbnailFile] = useState(null);
+  const [newImageFiles, setNewImageFiles] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+
+  // Fetch initial recipe data
   useEffect(() => {
-    (async () => {
+    const fetchRecipe = async () => {
       try {
-        const res = await axiosApi.get(`/chef/${chefId}/recipes/${recipeId}`);
+        const token = localStorage.getItem("token");
+        const res = await axiosApi.get(`/chef/recipes/${recipeId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         const r = res.data;
         setTitle(r.title || "");
         setDescription(r.description || "");
@@ -29,68 +41,120 @@ const EditRecipeDetailPage = () => {
         setUtensils((r.utensils || []).join(", "));
         setNutrition(r.nutritionInfo || "");
         setInstructions((r.instructions || []).join(", "));
-        setThumbnail(r.thumbnail || "");
-        setImages(r.images || []);
+        setThumbnailUrl(r.thumbnail || "");
+        setImageUrls(r.images || []);
       } catch (err) {
         Swal.fire("Error", "Failed to load recipe details", "error");
+        navigate("/chef/recipes"); // Navigate away if loading fails
       } finally {
         setLoading(false);
       }
-    })();
-  }, [chefId, recipeId]);
+    };
+    fetchRecipe();
+  }, [recipeId, navigate]);
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    if (uploading) {
-      Swal.fire("Wait", "Please wait until image upload completes.", "info");
+
+    const result = await Swal.fire({
+      title: "Confirm Update",
+      text: "Are you sure you want to update this recipe?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#28a745",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Update it!"
+    });
+
+    if (!result.isConfirmed) {
       return;
     }
+
+    Swal.fire({
+      title: "Updating...",
+      text: "Your recipe is being updated.",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading()
+    });
+
+    const formData = new FormData();
+
+    const recipeData = {
+      title,
+      description,
+      ingredients: ingredients.split(",").map((s) => s.trim()).filter(Boolean),
+      utensils: utensils.split(",").map((s) => s.trim()).filter(Boolean),
+      nutritionInfo: nutrition,
+      instructions: instructions.split(",").map((s) => s.trim()).filter(Boolean),
+      thumbnail: thumbnailUrl,
+      images: imageUrls,
+    };
+
+    formData.append("recipe", JSON.stringify(recipeData));
+
+    if (newThumbnailFile) {
+      formData.append("newThumbnailFile", newThumbnailFile);
+    }
+    newImageFiles.forEach(file => {
+      formData.append("newImageFiles", file);
+    });
+
     try {
+      // In your handleUpdate function in EditRecipePage.jsx
+
       await axiosApi.put(
-        `/chef/${chefId}/recipes/${recipeId}`,
+        `/chef/recipes/${recipeId}`,
+        formData,
         {
-          title,
-          description,
-          ingredients: ingredients.split(",").map((s) => s.trim()).filter(Boolean),
-          utensils: utensils.split(",").map((s) => s.trim()).filter(Boolean),
-          nutritionInfo: nutrition,
-          instructions: instructions.split(",").map((s) => s.trim()).filter(Boolean),
-          thumbnail,
-          images,
-        },
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            // This line overrides the global default ONLY for this specific API call.
+            // All other calls in your project remain unaffected.
+            'Content-Type': undefined,
+          }
+        }
       );
       Swal.fire({
-        icon: "success",
-        title: "Recipe Updated",
-        text: "Your recipe has been updated successfully!",
-        timer: 1400,
-        showConfirmButton: false,
-      }).then(() => navigate(`/chef/${chefId}/recipes/${recipeId}`));
+        icon: "success", title: "Recipe Updated", text: "Your recipe has been updated successfully!",
+        timer: 1500, showConfirmButton: false,
+      }).then(() => navigate(`/chef/recipes/${recipeId}`));
+
     } catch (err) {
-      Swal.fire("Error", err.response?.data?.message || "Update failed", "error");
+      // This is the key fix for the SweetAlert2 error.
+      // We extract a string from the error response object.
+      const errorMessage = err.response?.data?.message || err.response?.data || "Update failed. Please try again.";
+      Swal.fire("Error", errorMessage, "error");
     }
   };
 
-  // shared delete caller for uploader(s)
-  const deleteUrlForThisRecipe = async (url) => {
-    try {
-      await axiosApi.post(
-        `/chef/${chefId}/recipes/${recipeId}/images/delete`,
-        { url },
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
-      );
-      return true;
-    } catch (err) {
-      Swal.fire("Delete failed", err.response?.data || "Unable to delete image", "error");
-      return false;
-    }
-  };
+  const handleCancel = () => {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "Your changes will not be saved if you cancel.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, Discard Changes",
+        cancelButtonText: "No, Stay Here"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate(-1); // Go back to the previous page
+        }
+      });
+    };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <p>Loading recipe...</p>;
+
+  // Combine existing URLs and new files for the Uploader component's preview
+  const thumbnailForUploader = newThumbnailFile ? [newThumbnailFile] : (thumbnailUrl ? [thumbnailUrl] : []);
+  const imagesForUploader = [...imageUrls, ...newImageFiles];
+
   return (
-    <div className="container mt-4">
-      <h2>Edit Recipe</h2>
+    <div className={`bg-main bg-dots page-content${darkMode ? " dark-mode" : ""}`} style={{ paddingTop: "2rem" }}>
+      <h1 className={"text-deep-yellow"} style={{ fontSize: "2.5rem", fontWeight: "bold", textAlign: "center", marginBottom: "1.5rem" }}>
+        Edit Recipe
+      </h1>
       <form onSubmit={handleUpdate}>
         <div className="mb-3">
           <label className="form-label">Title</label>
@@ -116,49 +180,48 @@ const EditRecipeDetailPage = () => {
           <label className="form-label">Instructions (comma separated)</label>
           <textarea className="form-control" rows="3" value={instructions} onChange={(e) => setInstructions(e.target.value)} />
         </div>
+        <hr />
         <div className="mb-3">
           <label className="form-label">Thumbnail Image</label>
           <Uploader
             maxFiles={1}
-            defaultFiles={thumbnail ? [thumbnail] : []}
-            onUploadStart={() => {
-              setUploading(true);
-              Swal.fire({ title: "Uploading...", text: "Your image is uploading.", allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            files={thumbnailForUploader}
+            onFilesChange={(newFiles) => {
+              setThumbnailUrl(""); // Clear old URL when a new file is chosen
+              setNewThumbnailFile(newFiles[newFiles.length - 1] || null);
             }}
-            onUploadComplete={(urls) => {
-              setThumbnail(urls[0] || "");
-              setUploading(false);
-              Swal.close();
-              if (urls.length) Swal.fire("Uploaded!", "Thumbnail uploaded successfully.", "success");
+            onRemove={() => {
+              setThumbnailUrl("");
+              setNewThumbnailFile(null);
             }}
-            onUploadRemove={() => setThumbnail("")}
-            onDelete={deleteUrlForThisRecipe}
           />
         </div>
         <div className="mb-3">
           <label className="form-label">Additional Images</label>
           <Uploader
             maxFiles={5}
-            defaultFiles={images}
-            onUploadStart={() => setUploading(true)}
-            onUploadComplete={(urls) => {
-              setImages(urls);
-              setUploading(false);
+            files={imagesForUploader}
+            onFilesChange={(allFiles) => {
+              const newFiles = allFiles.filter(f => f instanceof File);
+              setNewImageFiles(newFiles);
             }}
-            onUploadRemove={(removedUrl) => {
-              setImages((prev) => prev.filter((u) => u !== removedUrl));
+            onRemove={(fileToRemove) => {
+              if (typeof fileToRemove === 'string') {
+                setImageUrls(prev => prev.filter(url => url !== fileToRemove));
+              } else {
+                setNewImageFiles(prev => prev.filter(f => f !== fileToRemove));
+              }
             }}
-            onDelete={deleteUrlForThisRecipe}
           />
           <div className="form-text text-secondary">You can upload up to <strong>5 images</strong>.</div>
         </div>
-        <div className="d-flex justify-content-between mt-3">
-          <button type="submit" className="btn btn-warning" disabled={uploading}>Update</button>
-          <button type="button" className="btn btn-danger" disabled={uploading} onClick={() => navigate(`/chef/${chefId}/recipes/${recipeId}`)}>Cancel</button>
+        <div className="d-flex justify-content-between mt-4">
+          <button type="submit" className="btn btn-warning">Update Recipe</button>
+          <button type="button" className="btn btn-danger" onClick={handleCancel}>
+            Cancel
+          </button>
         </div>
       </form>
     </div>
   );
 };
-
-export default EditRecipeDetailPage;

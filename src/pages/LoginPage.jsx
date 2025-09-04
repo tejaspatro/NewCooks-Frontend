@@ -43,7 +43,11 @@ export default function LoginPage({ darkMode }) {
         showConfirmButton: false,
         timerProgressBar: true
       }).then(() => {
-        navigate("/");
+        if (role === "chef") {
+          navigate("/chef/homepage");
+        } else {
+          navigate("/user/homepage");
+        }
       });
     } catch (err) {
       const msg = err.response?.data?.message || "Login failed";

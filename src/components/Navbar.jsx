@@ -1,6 +1,7 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, NavLink } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useState, useEffect } from "react";
+import ChefSearchBar from "./ChefSearchBar";
 
 export default function Navbar({ darkMode, setDarkMode }) {
   const navigate = useNavigate();
@@ -17,15 +18,15 @@ export default function Navbar({ darkMode, setDarkMode }) {
       setRole(localStorage.getItem("role"));
       setChefId(localStorage.getItem("chefId"));
     };
-    
+
     window.addEventListener("storage", handleStorageChange);
-    
+
     // Cleanup the event listener when the component unmounts
     return () => {
       window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
-  
+
   const handleLogout = () => {
     Swal.fire({
       title: "Are you sure?",
@@ -56,68 +57,119 @@ export default function Navbar({ darkMode, setDarkMode }) {
 
   return (
     <>
-    <header>
-    <nav className="navbar navbar-expand-lg navbar-dark" style={{ backgroundColor: "#d62828" }}>
-      <div className="container-fluid">
-        <Link className="navbar-brand fw-bold" to="/">NewCooks</Link>
+      <header>
+        <nav className="navbar navbar-expand-lg navbar-dark" style={{ backgroundColor: "#d62828" }}>
+          <div className="container-fluid">
+            <NavLink
+                    to={role === "chef" ? "/chef/homepage" : "/user/homepage"}
+                    className={({ isActive }) =>
+                      `navbar-brand fw-bold nav-link ${isActive ? "active-link" : ""}`
+                    }
+                  >
+                    NewCooks
+                  </NavLink>
 
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse"
-          data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
-          aria-label="Toggle navigation">
-          <span className="navbar-toggler-icon"></span>
-        </button>
+            <button className="navbar-toggler" type="button" data-bs-toggle="collapse"
+              data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+              aria-label="Toggle navigation">
+              <span className="navbar-toggler-icon"></span>
+            </button>
 
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav me-auto">
-            <li className="nav-item">
-              <Link className="nav-link" to="/">Home</Link>
-            </li>
+            <div className="collapse navbar-collapse" id="navbarNav">
+              <ul className="navbar-nav me-auto">
+                <li className="nav-item">
+                  <NavLink
+                    to={role === "chef" ? "/chef/homepage" : "/user/homepage"}
+                    className={({ isActive }) =>
+                      `nav-link ${isActive ? "active-link" : ""}`
+                    }
+                  >
+                    Home
+                  </NavLink>
+                </li>
 
-            {role === "chef" && chefId && (
-              <li className="nav-item">
-                <Link to={`/chef/${chefId}/recipes`} className="nav-link">My Recipes</Link>
-              </li>
-            )}
+                <li className="nav-item">
+                  <NavLink
+                    to={role === "chef" ? "/chef/recipes" : "/recipes"}
+                    className={({ isActive }) =>
+                      `nav-link ${isActive ? "active-link" : ""}`
+                    }
+                  >
+                    {role === "chef" ? "My Recipes" : "Recipes"}
+                  </NavLink>
+                </li>
 
-            {role === "user" && (
-              <li className="nav-item">
-                <Link to="/recipes" className="nav-link">Recipes</Link>
-              </li>
-            )}
+                {role && <li className="nav-item">
+                  <NavLink
+                    to={role === "chef" ? "/chef/chefprofile" : "user/userprofile"}
+                    className={({ isActive }) =>
+                      `nav-link ${isActive ? "active-link" : ""}`
+                    }
+                  >
+                    My Profile
+                  </NavLink>
+                </li>}
 
-            <li className="nav-item">
-              <Link className="nav-link" to="/about">About</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/contact">Contact Us</Link>
-            </li>
-          </ul>
+                <li className="nav-item">
+                  <NavLink
+                    to="/about"
+                    className={({ isActive }) =>
+                      `nav-link ${isActive ? "active-link" : ""}`
+                    }
+                  >
+                    About
+                  </NavLink>
+                </li>
 
-          <div className="d-flex align-items-center">
-            <i
-              id="theme-toggle"
-              className={`fas ${darkMode ? "fa-sun" : "fa-moon"} me-3 text-white`}
-              style={{ cursor: "pointer", fontSize: "1.5rem" }}
-              title={darkMode ? "Enable Light Mode" : "Enable Dark Mode"}
-              onClick={() => {
-                setDarkMode(!darkMode);
-                localStorage.setItem("darkMode", !darkMode);
-              }}
-            ></i>
+                <li className="nav-item">
+                  <NavLink
+                    to="/contact"
+                    className={({ isActive }) =>
+                      `nav-link ${isActive ? "active-link" : ""}`
+                    }
+                  >
+                    Contact Us
+                  </NavLink>
+                </li>
+              </ul>
 
-            {!token ? (
-              <>
-                <Link to="/login" className="btn btn-light me-2">Login</Link>
-                <Link to="/signup" className="btn btn-warning">Sign Up</Link>
-              </>
-            ) : (
-              <button className="btn btn-warning" onClick={handleLogout}>Logout</button>
-            )}
+              <div className="d-flex align-items-center ms-right">
+                <i
+                  id="theme-toggle"
+                  className={`fa-solid ${darkMode ? "fa-sun" : "fa-moon"} me-2`}
+                  style={{
+                    cursor: "pointer",
+                    fontSize: "1.6rem",
+                    color: darkMode ? "#FFD43B" : "#00bcddff", // yellow for sun, blue for moon
+                    transition: "color 0.3s ease, transform 0.3s ease"
+                  }}
+                  title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                  onClick={() => {
+                    setDarkMode(!darkMode);
+                    localStorage.setItem("darkMode", !darkMode);
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.transform = "rotate(20deg)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.transform = "rotate(0deg)")}
+                />
+
+                <div className="me-3">
+                  {role === "chef" && chefId && <ChefSearchBar />}
+                  {/* {role === "user" && <UserSearchBar />} */}
+                </div>
+
+                {!token ? (
+                  <>
+                    <Link to="/login" className="btn btn-light me-2">Login</Link>
+                    <Link to="/signup" className="btn btn-warning">Sign Up</Link>
+                  </>
+                ) : (
+                  <button className="btn btn-warning" onClick={handleLogout}>Logout</button>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    </nav>
-    </header>
+        </nav>
+      </header>
     </>
   );
 }

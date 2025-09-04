@@ -17,6 +17,12 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import EditRecipeDetailPage from "./pages/chef/EditRecipePage";
 import ChefProfilePage from "./pages/chef/ChefProfilePage";
 import ChefHero from "./pages/chef/Homepage/ChefHero";
+import UserProfilePage from "./pages/UserProfilePage";
+import "@fortawesome/fontawesome-free/css/all.min.css";
+import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick-theme.css";
+
+
 
 function App() {
   const [darkMode, setDarkMode] = useState(
@@ -44,46 +50,48 @@ function AppContent({ darkMode, setDarkMode }) {
           <Route path="/signup" element={<SignupPage darkMode={darkMode} />} />
           <Route path="/recipes" element={<RecipesPage darkMode={darkMode} />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage darkMode={darkMode} />} />
-          <Route path="/chef/:chefId/recipes/:recipeId/edit" element={<EditRecipeDetailPage />} />
+          <Route path="/chef/:chefId/recipes/:recipeId/edit" element={<EditRecipeDetailPage darkMode={darkMode}/>} />
           <Route path="/chef/chefprofile" element={<ChefProfilePage darkMode={darkMode} />} />
+
           <Route
-            path="/chef/:chefId/recipes/:recipeId"
+            path="/chef/recipes/:recipeId"
             element={<ChefRecipeDetailPage darkMode={darkMode} />}
           />
           <Route
-            path="/user/recipes/:recipeId"
-            element={<UserRecipeDetailPage darkMode={darkMode} />}
-          />
-          <Route
-            path="/chef/:chefId/recipes/add"
+            path="/chef/recipes/add"
             element={<AddRecipePage darkMode={darkMode} />}
           />
 
           <Route
-            path="/chef/:chefId/recipes"
+            path="/chef/recipes"
             element={
               <ProtectedRoute>
-                <MyRecipesPage />
+                <MyRecipesPage darkMode={darkMode}/>
               </ProtectedRoute>
             }
           />
 
           {/* Chef homepage testing  */},
-          <Route path="/" element={<ChefHero darkMode={darkMode} />} />
+          <Route path="/chef/homepage" element={<ChefHero darkMode={darkMode} />} />
           {/* Navbar
 
-          Hero/Profile Section (profile pic, welcome, stats)
+Hero/Profile Section (profile pic, welcome, stats)
 
-          Featured Recipes (most rated + most reviewed)
+Featured Recipes (most rated + most reviewed)
 
-          My Recipes Grid/List (with “Add Recipe”)
+My Recipes Grid/List (with “Add Recipe”)
 
-          Insights / Analytics (charts, quick stats)
+Insights / Analytics (charts, quick stats)
 
-          Latest Reviews
+Latest Reviews
 
-          Quick Actions */}
+Quick Actions */}
 
+          <Route
+            path="/user/recipes/:recipeId"
+            element={<UserRecipeDetailPage darkMode={darkMode} />}
+          />
+          <Route path="/user/userprofile" element={<UserProfilePage darkMode={darkMode} />} />
         </Routes>
       </main>
     </>

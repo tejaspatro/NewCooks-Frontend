@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import axiosApi from "../../api/axiosConfig";
 import Swal from "sweetalert2";
 import RecipeDetails from "../../components/RecipeDetails";
+import { useLoading } from "../../context/LoadingContext";
 
 export default function ChefRecipeDetailPage({ darkMode }) {
   const { chefId, recipeId } = useParams();
@@ -11,23 +12,49 @@ export default function ChefRecipeDetailPage({ darkMode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const { startLoading, stopLoading } = useLoading();
 
+  // Fetch recipe
   useEffect(() => {
     async function fetchRecipe() {
+      startLoading("Fetching recipe details...");
       try {
-        setLoading(true);
-        const res = await axiosApi.get(`/chef/${chefId}/recipes/${recipeId}`);
+        const res = await axiosApi.get(`/chef/recipes/${recipeId}`);
         setRecipe(res.data);
       } catch (err) {
-        setError("Failed to load recipe.");
+        setError("Failed to load recipe. Please log in again!!!");
         console.error(err);
       } finally {
+        stopLoading();
         setLoading(false);
       }
     }
     fetchRecipe();
-  }, [chefId, recipeId]);
+  }, [recipeId]);
 
+  // Go Back handler
+  const handleGoBack = () => {
+    startLoading("Taking you back...");
+    setTimeout(() => {
+      navigate(-1);
+      stopLoading();
+    }); // small delay so loader shows briefly
+  };
+
+  // Edit handler
+  const handleEdit = (e) => {
+    if (deleting) {
+      e.preventDefault();
+      return;
+    }
+    startLoading("Opening edit page...");
+    setTimeout(() => {
+      navigate(`/chef/${chefId}/recipes/${recipeId}/edit`);
+      stopLoading();
+    });
+  };
+
+  // Delete handler
   const handleDelete = async () => {
     const result = await Swal.fire({
       title: "Are you sure?",
@@ -37,44 +64,62 @@ export default function ChefRecipeDetailPage({ darkMode }) {
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
       confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "Cancel"
+      cancelButtonText: "Cancel",
     });
 
     if (result.isConfirmed) {
+      setDeleting(true);
+      startLoading("Deleting your recipe...");
       try {
-        setDeleting(true);
-        await axiosApi.delete(`/chef/${chefId}/recipes/${recipeId}`);
+        await axiosApi.delete(`/chef/recipes/${recipeId}`);
 
-        Swal.fire({
+        await Swal.fire({
           icon: "success",
           title: "Deleted!",
           text: "Your recipe has been deleted.",
-          confirmButtonText: "OK"
-        }).then(() => {
-          navigate(`/chef/${chefId}/recipes`);
+          confirmButtonText: "OK",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          timer: undefined,
         });
 
+        navigate(`/chef/recipes`);
       } catch (err) {
-        Swal.fire({
+        await Swal.fire({
           icon: "error",
           title: "Delete failed",
-          text: "Something went wrong while deleting the recipe."
+          text: "Something went wrong while deleting the recipe.",
+          confirmButtonText: "OK",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          timer: undefined,
         });
         console.error(err);
       } finally {
         setDeleting(false);
+        stopLoading();
       }
     }
+
   };
 
-  if (loading) return <div className={`page-content${darkMode ? " dark-mode" : ""}`}>Loading...</div>;
-  if (error) return <div className={`page-content${darkMode ? " dark-mode" : ""}`}>{error}</div>;
-  if (!recipe) return <div className={`page-content${darkMode ? " dark-mode" : ""}`}>Recipe not found</div>;
+  if (error)
+    return (
+      <div
+        className={`page-content${darkMode ? " dark-mode" : ""} bg-main text-center`}
+      >
+        {error}
+      </div>
+    );
+  if (!recipe)
+    return <div className={`page-content${darkMode ? " dark-mode" : ""}`}>Recipe not found</div>;
 
   return (
-    <div className={`bg-main bg-dots page-content${darkMode ? " dark-mode" : ""}`} style={{ position: "relative", paddingBottom: "2rem" }}>
-
-      {/* Top Controls: Go Back / Edit / Delete */}
+    <div
+      className={`bg-main bg-dots page-content${darkMode ? " dark-mode" : ""}`}
+      style={{ position: "relative", paddingBottom: "2rem" }}
+    >
+      {/* Top Controls */}
       <div
         style={{
           position: "sticky",
@@ -89,9 +134,9 @@ export default function ChefRecipeDetailPage({ darkMode }) {
         className="sticky-controls"
       >
         {/* Go Back Button */}
-        <div style={{ left: 0 }}>
+        <div>
           <button
-            onClick={() => navigate(`/chef/${chefId}/recipes`)}
+            onClick={handleGoBack}
             className="btn btn-warning me-2"
             disabled={deleting}
           >
@@ -99,7 +144,7 @@ export default function ChefRecipeDetailPage({ darkMode }) {
           </button>
         </div>
 
-        {/* Centered Title */}
+        {/* Title */}
         <h1
           className={`${darkMode ? "text-deep-yellow" : "text-danger"}`}
           style={{
@@ -113,15 +158,15 @@ export default function ChefRecipeDetailPage({ darkMode }) {
           {recipe.title}
         </h1>
 
-        {/* Edit/Delete Buttons */}
+        {/* Edit/Delete */}
         <div>
-          <Link
-            to={`/chef/${chefId}/recipes/${recipeId}/edit`}
+          <button
+            onClick={handleEdit}
             className={`btn btn-warning text-dark me-2 ${deleting ? "disabled" : ""}`}
-            onClick={(e) => deleting && e.preventDefault()}
+            disabled={deleting}
           >
             Edit
-          </Link>
+          </button>
 
           <button
             onClick={handleDelete}
@@ -140,10 +185,10 @@ export default function ChefRecipeDetailPage({ darkMode }) {
         </div>
       </div>
 
+      {/* Recipe Content */}
       {!loading && !error && recipe && (
         <RecipeDetails recipe={recipe} darkMode={darkMode} />
       )}
-
     </div>
   );
 }
