@@ -384,7 +384,7 @@ export default function RecipeDetails({ recipe, darkMode }) {
                     className="bg-warning rounded"
                     style={{ width: `${ratingPercentages[star]}%`, height: "100%" }}
                   ></div>
-                  <span style={{ position: "absolute", right: "5px", top: 0, fontSize: "0.8rem" }}>
+                  <span style={{ position: "absolute", right: "5px", top: 0, fontSize: "0.8rem", }}>
                     {ratingsData.counts[star] || 0}
                   </span>
                 </div>

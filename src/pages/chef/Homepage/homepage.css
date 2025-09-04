@@ -141,13 +141,17 @@
   color: white;
 }
 
-body.dark-mode .chef-homepage-reviews {
-  background: linear-gradient(270deg, #ff2600, #ffd700, #ff4500, #ffd700);
+.dark-mode .chef-homepage-reviews {
+  background: linear-gradient(270deg, #b33c6a 0%,   /* deep rose */
+#a1873f 35%,  /* mustard-y gold */
+#b33c6a 70%,  /* deep rose */
+#a1873f 100%  /* mustard-y gold */
+);
   background-size: 800% 800%;
   animation: chef-homepage-reviews-bg 25s ease infinite;
   background-blend-mode: overlay;
 }
-body.dark-mode .chef-homepage-reviews::before {
+.dark-mode .chef-homepage-reviews::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -279,6 +283,8 @@ body.dark-mode .chef-homepage-reviews::before {
   font-size: 3rem;
   color: #000; /* Black pan */
   z-index: 2;
+  margin-top: -28%;
+  margin-bottom: 23%;
 }
 
 /* Smoke effect */
@@ -319,12 +325,24 @@ body.dark-mode .chef-homepage-reviews::before {
 /* analytics cards */
 .analytics-card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative; /* ensures z-index works */
+  z-index: 2; 
 }
 .analytics-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 15px 25px rgba(0,0,0,0.2);
 }
+.analytics-chart {
+  position: relative; /* ensures z-index works */
+  z-index: 2;         /* above the blobs which are z-index 0 */
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15); /* subtle shadow */
+  border-radius: 15px;
+  padding: 2rem;
+  background-color: #fff; /* or #1e1e1e for dark mode */
+}
 
+
+/* Card gradients */
 .bg-gradient-primary {
   background: linear-gradient(135deg, #f6d365, #fda085);
 }
@@ -333,4 +351,289 @@ body.dark-mode .chef-homepage-reviews::before {
 }
 .bg-gradient-danger {
   background: linear-gradient(135deg, #ff758c, #ff7eb3);
+}
+
+/* --- Light mode: slightly darker, appetizing colors --- */
+.analytics-bg-light {
+  background: linear-gradient(
+    135deg,
+    #ffd0b3 0%,    /* richer peach */
+    #ffe0b3 35%,   /* soft orange */
+    #ffbfa6 70%,   /* warm coral */
+    #fff0e5 100%   /* off-white */
+  );
+  background-size: 400% 400%;
+  animation: gradientMove 20s ease infinite;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  padding: 3rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Soft blobs */
+.analytics-bg-light::before,
+.analytics-bg-light::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.25;
+  z-index: 0;
+  animation: floatBlob 8s ease-in-out infinite;
+}
+
+.analytics-bg-light::before {
+  width: 220px;
+  height: 220px;
+  background: #ff895b;
+  top: -50px;
+  left: -50px;
+}
+
+.analytics-bg-light::after {
+  width: 320px;
+  height: 320px;
+  background: #ff895b;
+  bottom: -100px;
+  right: -100px;
+}
+
+/* --- Dark mode: comfy, food-inspired darker colors --- */
+.analytics-bg-dark {
+  background: linear-gradient(
+    135deg,
+    #7b2f3a 0%,   /* deep crimson rose */
+    #a63d4b 35%,  /* rich pink-red */
+    #c75b66 70%,  /* soft reddish-pink */
+    #e07a85 100%  /* pale rosy pink */
+  );
+  background-size: 400% 400%;
+  animation: gradientMove 25s ease infinite;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  padding: 3rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Dark blobs */
+.analytics-bg-dark::before,
+.analytics-bg-dark::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.2;
+  z-index: 1;
+  animation: floatBlob 8s ease-in-out infinite;
+}
+
+.analytics-bg-dark::before {
+  width: 220px;
+  height: 220px;
+  background: #5c4747;
+  top: -50px;
+  left: -50px;
+}
+
+.analytics-bg-dark::after {
+  width: 320px;
+  height: 320px;
+  background: #4b3a3a;
+  bottom: -100px;
+  right: -100px;
+}
+
+/* Gradient animation */
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Floating blobs */
+@keyframes floatBlob {
+  0%, 100% { transform: translateY(0px) translateX(0px); }
+  50% { transform: translateY(15px) translateX(10px); }
+}
+
+/* review cards */
+
+
+/* --- Light Mode Background with Slanting Lines --- */
+.reviews-bg-light {
+  background: repeating-linear-gradient(
+      45deg,
+      #fff0e5 0,
+      #fff0e5 6px,
+      #ffe5d4 6px,
+      #ffe5d4 12px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      #fff0e5 0,
+      #fff0e5 6px,
+      #ffe5d4 6px,
+      #ffe5d4 12px
+    );
+}
+
+/* --- Dark Mode Background with Slanting Lines --- */
+.reviews-bg-dark {
+  background: repeating-linear-gradient(
+      45deg,
+      #5a1e2b 0,
+      #5a1e2b 6px,
+      #802b40 6px,
+      #802b40 12px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      #5a1e2b 0,
+      #5a1e2b 6px,
+      #802b40 6px,
+      #802b40 12px
+    );
+    color: #a6c1ee;
+}
+
+/* Review Cards */
+.review-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 35px rgba(0, 0, 0, 0.25);
+}
+.review-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: center;
+}
+
+.review-card p {
+  flex-grow: 1; /* keeps text vertically balanced */
+}
+
+.review-card-center {
+  transform: scale(1.05);
+}
+.review-card-center:hover {
+  transform: scale(1.08);
+}
+
+.review-img {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border: 3px solid #fff;
+}
+
+/* Gradient backgrounds for cards */
+
+.bg-gradient1 {
+  background: linear-gradient(135deg, #ffb347, #ffcc33);
+}
+
+/* Berry & Strawberry Cream */
+.bg-gradient2 {
+  background: linear-gradient(135deg, #ff758c, #ffb6b9);
+}
+
+/* Chocolate & Coffee */
+.bg-gradient3 {
+  background: linear-gradient(135deg, #8e5a2a, #d2a679);
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .review-card-center {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.review-user-name {
+  color: blue;
+}
+
+/* help part */
+/* --- Backgrounds --- */
+.help-bg-light {
+  background: repeating-linear-gradient(
+    135deg,
+    #fff8f0 0,
+    #fff8f0 8px,
+    #ffeedd 8px,
+    #ffeedd 16px
+  );
+}
+
+.help-bg-dark {
+  background: repeating-linear-gradient(
+    135deg,
+    #2d1f1f 0,
+    #2d1f1f 8px,
+    #3c2a2a 8px,
+    #3c2a2a 16px
+  );
+}
+
+/* --- Light Mode Grid Background --- */
+.help-grid-light {
+  background: linear-gradient(135deg, #ffe5b4, #ff9a76, #ffd700);
+  position: relative;
+}
+
+.help-grid-light::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+/* Help Cards Background - Light mode */
+.help-grid-light .help-card {
+  background-color: rgb(250, 246, 0); /* semi-transparent white */
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+}
+
+/* --- Dark Mode Grid Background --- */
+.help-grid-dark {
+  background: linear-gradient(135deg, #5a0000, #cc3700, #b38f00);
+  position: relative;
+}
+
+.help-grid-dark::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(0, 0, 0, 0.3) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+/* Help Cards Background - Dark mode */
+.help-grid-dark .help-card {
+  background-color: rgba(40, 20, 20, 0.85); /* semi-transparent deep maroon */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 8px rgb(255 255 255 / 0.1);
+  color: #f8f8f8; /* light text for contrast */
+}
+
+/* Ensure text colors inside cards in dark mode */
+.help-grid-dark .help-card h5,
+.help-grid-dark .help-card p,
+.help-grid-dark .help-card a {
+  color: #f8f8f8 !important;
+}
+
+.help-btn {
+  opacity: 0.9 !important;
 }

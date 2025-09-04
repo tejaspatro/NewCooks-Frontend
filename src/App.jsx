@@ -21,6 +21,7 @@ import UserProfilePage from "./pages/UserProfilePage";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
+import ScrollToTopButton from "./components/ScrollToTopButton";
 
 
 
@@ -93,6 +94,7 @@ Quick Actions */}
           />
           <Route path="/user/userprofile" element={<UserProfilePage darkMode={darkMode} />} />
         </Routes>
+          <ScrollToTopButton darkMode={darkMode} />
       </main>
     </>
   );

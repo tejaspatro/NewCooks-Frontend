@@ -4,9 +4,9 @@ import axiosApi from "../../api/axiosConfig";
 import "../recipe.css";
 import "./profile.css";
 import placeHolderImg from "../../images/Profile_avatar_placeholder_large.png";
-import { FaUpload, FaTrash } from "react-icons/fa";
 import Swal from "sweetalert2";
 import { useLoading } from "../../context/LoadingContext";
+import { FaArrowLeft, FaUpload, FaTrash } from "react-icons/fa";
 
 export default function ChefProfilePage({ darkMode }) {
   const navigate = useNavigate();
@@ -104,62 +104,80 @@ export default function ChefProfilePage({ darkMode }) {
       </div>
     );
 
-    return (
-        <div className={`profile-page ${darkMode ? "dark-mode" : ""}`}>
-            <div className="profile-container">
-                <div className="profile-image-wrapper">
-                    <img src={imageSource} alt="Profile" className="profile-image" />
-                    {editable && (
-                        <div>
-                            {/* UPDATED: Check both states for delete icon */}
-                            {updatedData.profilePicture || newProfilePictureFile ? (
-                                <button className="image-action-btn" onClick={handleImageDelete} title="Delete Image">
-                                    <FaTrash />
-                                </button>
-                            ) : (
-                                <label className="image-action-btn" title="Upload Image">
-                                    <FaUpload />
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        style={{ display: "none" }}
-                                        ref={fileInputRef}
-                                        onChange={handleFileSelect} // Use new handler
-                                    />
-                                </label>
-                            )}
-                        </div>
-                    )}
-                </div>
+  return (
+    <div className={`profile-page ${darkMode ? "dark-mode" : ""}`}>
+      <div className="profile-container">
+          <button
+            onClick={() => navigate(-1)}
+            style={{
+              position: "absolute",
+              top: 45,
+              left: 40,
+              backgroundColor: "rgba(0, 0, 0, 0.1)",
+              border: "none",
+              cursor: "pointer",
+              color: "#000", // adjust color as needed
+              fontSize: "1.2rem",
+              zIndex: 10,
+            }}
+            title="Go Back"
+          >
+            <FaArrowLeft />
+          </button>
+        <div className="profile-image-wrapper" style={{ position: "relative" }}>
 
-                <div className="profile-details">
-                    <label>Name</label>
-                    <input type="text" name="name" value={updatedData.name || ""} onChange={handleChange} disabled={!editable || isSubmitting} />
-                    <label>Expertise</label>
-                    <input type="text" name="expertise" value={updatedData.expertise || ""} onChange={handleChange} disabled={!editable || isSubmitting} />
-                    <label>Experience</label>
-                    <input type="text" name="experience" value={updatedData.experience || ""} onChange={handleChange} disabled={!editable || isSubmitting} />
-                    <label>Bio</label>
-                    <textarea name="bio" value={updatedData.bio || ""} onChange={handleChange} disabled={!editable || isSubmitting} />
-
-                    {!editable ? (
-                        <div className="profile-actions justify-content-center d-flex align-items-center">
-                        <button className="btn btn-warning " onClick={() => setEditable(true)}>
-                            Edit Profile
-                        </button>
-                        </div>
-                    ) : (
-                        <div className="profile-actions">
-                            <button className="btn btn-warning" onClick={handleSave} disabled={isSubmitting}>
-                                {isSubmitting ? "Saving..." : "Save"}
-                            </button>
-                            <button className="btn btn-danger" onClick={handleCancel} disabled={isSubmitting}>
-                                Cancel
-                            </button>
-                        </div>
-                    )}
-                </div>
+          <img src={imageSource} alt="Profile" className="profile-image" />
+          {editable && (
+            <div>
+              {/* UPDATED: Check both states for delete icon */}
+              {updatedData.profilePicture || newProfilePictureFile ? (
+                <button className="image-action-btn" onClick={handleImageDelete} title="Delete Image">
+                  <FaTrash />
+                </button>
+              ) : (
+                <label className="image-action-btn" title="Upload Image">
+                  <FaUpload />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    ref={fileInputRef}
+                    onChange={handleFileSelect} // Use new handler
+                  />
+                </label>
+              )}
             </div>
+          )}
         </div>
-    );
+
+        <div className="profile-details">
+          <label>Name</label>
+          <input type="text" name="name" value={updatedData.name || ""} onChange={handleChange} disabled={!editable || isSubmitting} />
+          <label>Expertise</label>
+          <input type="text" name="expertise" value={updatedData.expertise || ""} onChange={handleChange} disabled={!editable || isSubmitting} />
+          <label>Experience</label>
+          <input type="text" name="experience" value={updatedData.experience || ""} onChange={handleChange} disabled={!editable || isSubmitting} />
+          <label>Bio</label>
+          <textarea name="bio" value={updatedData.bio || ""} onChange={handleChange} disabled={!editable || isSubmitting} />
+
+          {!editable ? (
+            <div className="profile-actions justify-content-center d-flex align-items-center">
+              <button className="btn btn-warning " onClick={() => setEditable(true)}>
+                Edit Profile
+              </button>
+            </div>
+          ) : (
+            <div className="profile-actions">
+              <button className="btn btn-warning" onClick={handleSave} disabled={isSubmitting}>
+                {isSubmitting ? "Saving..." : "Save"}
+              </button>
+              <button className="btn btn-danger" onClick={handleCancel} disabled={isSubmitting}>
+                Cancel
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
