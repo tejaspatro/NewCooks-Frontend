@@ -403,6 +403,24 @@
   font-weight: 600;
 }
 
+/* --- DARK MODE OVERRIDE --- */
+.navbar-nav .nav-link.dark-mode {
+  color: #13f4ff; /* cyan */
+}
+
+/* Hover/focus effect in dark mode (keeps same as light mode) */
+.navbar-nav .nav-link.dark-mode:hover,
+.navbar-nav .nav-link.dark-mode:focus {
+  color: #ff7f00;
+  border-bottom-color: #ff7f00;
+}
+
+/* Active page link in dark mode (keeps same as light mode) */
+.navbar-nav .nav-link.active-link.dark-mode {
+  color: #ffc400;
+  border-bottom-color: #ffc400;
+}
+
 /* Navbar brand with subtle glowing effect on hover */
 .navbar-brand {
   transition: text-shadow 0.4s ease;
@@ -461,4 +479,12 @@
     margin-right: 0;
     margin-bottom: 0.75rem;
   }
+}
+
+.text-link-hover {
+  color: white;
+}
+
+.text-link-hover:hover {
+  color:#FFD700;
 }

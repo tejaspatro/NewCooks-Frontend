@@ -15,6 +15,8 @@ export default function RecipeDetails({ recipe, darkMode }) {
     counts: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 },
   });
 
+  const role = localStorage.getItem("role");
+
   useEffect(() => {
     async function fetchRatings() {
       try {
@@ -455,11 +457,6 @@ export default function RecipeDetails({ recipe, darkMode }) {
           <p>No reviews yet. Be the first to review!</p>
         )}
       </DiagonalCard>
-
-
-
-
-
 
     </>
   );

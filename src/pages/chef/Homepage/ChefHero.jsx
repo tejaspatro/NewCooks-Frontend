@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axiosApi from "../../../api/axiosConfig";
-import chefheroimage from "../../../images/Chef/chefhero/chef_hero_hd.png";
+import chefheroimage from "../../../images/Chef/chefhero/chef_hero.png";
 import chefherovideo from "../../../images/Chef/chefhero/perplexity_Clipchamp.mp4";
 import placeHolderImg from "../../../images/Profile_avatar_placeholder_large.png";
 import recipePlaceHolder from "../../../images/recipe_thumbnail.png";
@@ -27,7 +27,7 @@ export default function ChefHero({ darkMode }) {
       try {
         const [chefRes, reviewedRes, analyticsRes] = await Promise.all([
           axiosApi.get("/chef/chefprofile"),
-          axiosApi.get("/recipes/most-reviewed"),
+          axiosApi.get("/chef/most-reviewed"),
           axiosApi.get("/chef/analytics")
             .then(res => setAnalytics(res.data))
             .catch(err => console.log(err))
@@ -72,6 +72,7 @@ export default function ChefHero({ darkMode }) {
                   id="heroVideo"
                   className="hero-video"
                   src={chefherovideo}
+                  poster={chefheroimage}
                   autoPlay
                   muted
                   playsInline
@@ -197,7 +198,7 @@ export default function ChefHero({ darkMode }) {
 
       {/* analytics */}
       <section className={`chef-analytics-section py-5 ${darkMode ? "analytics-bg-dark" : "analytics-bg-light"}`}>
-        <h2 className="text-center mb-5 " style={{ color: darkMode ? "#00fffbff" : "#0011ffff" }}>Your Analytics</h2>
+        <h2 className="text-center mb-5 " style={{ color: darkMode ? "#00ffffff" : "#0011ffff", textShadow: "2px 2px 8px rgba(0,0,0,0.5)", }}><u> Your Analytics </u></h2>
 
         {/* Cards */}
         <div className="row justify-content-center g-4 mb-5">
@@ -230,14 +231,33 @@ export default function ChefHero({ darkMode }) {
         <div className={`analytics-chart shadow p-4 rounded ${darkMode ? "bg-dark text-light" : "bg-light text-dark"}`}>
           <h4 className="text-center mb-4">Top 5 Most Reviewed Recipes</h4>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={mostReviewed} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="title" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="totalReviews" fill="#FF005D" radius={[5, 5, 0, 0]} />
-            </BarChart>
+            {mostReviewed && mostReviewed.length > 0 ? (
+              <BarChart
+                data={mostReviewed}
+                margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="title" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="totalReviews" fill="#FF005D" radius={[5, 5, 0, 0]} />
+              </BarChart>
+            ) : (
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  fontSize: "1.2rem",
+                  color: "#888",
+                }}
+              >
+                No data available
+              </div>
+            )}
           </ResponsiveContainer>
+
         </div>
       </section>
 
@@ -246,7 +266,7 @@ export default function ChefHero({ darkMode }) {
         className={`reviews-section position-relative w-100 py-5 ${darkMode ? "reviews-bg-dark" : "reviews-bg-light"}`}
       >
         <div className="container">
-          <div className="text-center mb-5">
+          <div style={{ textShadow: "2px 2px 8px rgba(0,0,0,0.7)", }} className="text-center mb-5">
             <h2 className="fw-bold">What Our Users Say</h2>
             <p className="fs-5">
               Hear from our food lovers and chefs about their NewCooks experience
@@ -325,7 +345,7 @@ export default function ChefHero({ darkMode }) {
               <div className="help-card p-4 rounded-4 shadow-sm h-100 d-flex flex-column justify-content-center">
                 <h5 className="fw-bold mb-3">📘 Beginner’s Guide</h5>
                 <p className="mb-4">Learn how to explore and post recipes step by step.</p>
-                <Link to="/guide" className="btn btn-primary mt-auto help-btn">View Guide</Link>
+                <Link to="/help#chef-guide" className="btn btn-primary mt-auto help-btn">View Guide</Link>
               </div>
             </div>
 
@@ -334,7 +354,7 @@ export default function ChefHero({ darkMode }) {
               <div className="help-card p-4 rounded-4 shadow-sm h-100 d-flex flex-column justify-content-center">
                 <h5 className="fw-bold mb-3">❓ FAQs</h5>
                 <p className="mb-4">Find quick answers to common questions.</p>
-                <Link to="/faq" className="btn btn-success mt-auto help-btn">Browse FAQs</Link>
+                <Link to="/help#faqs" className="btn btn-success mt-auto help-btn">Browse FAQs</Link>
               </div>
             </div>
 
@@ -343,7 +363,7 @@ export default function ChefHero({ darkMode }) {
               <div className="help-card p-4 rounded-4 shadow-sm h-100 d-flex flex-column justify-content-center">
                 <h5 className="fw-bold mb-3">💬 Support</h5>
                 <p className="mb-4">Need more help? Contact our team directly.</p>
-                <Link to="/contact" className="btn btn-danger mt-auto help-btn">Contact Us</Link>
+                <Link to="/help#contact-us" className="btn btn-danger mt-auto help-btn">Contact Us</Link>
               </div>
             </div>
           </div>

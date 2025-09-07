@@ -2,6 +2,8 @@ import { Link, useNavigate, NavLink } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useState, useEffect } from "react";
 import ChefSearchBar from "./ChefSearchBar";
+import UserSearchBar from "./UserSearchBar";
+import newcooksLogo from "../images/newcooks_logo.jpeg";
 
 export default function Navbar({ darkMode, setDarkMode }) {
   const navigate = useNavigate();
@@ -10,6 +12,7 @@ export default function Navbar({ darkMode, setDarkMode }) {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [role, setRole] = useState(localStorage.getItem("role"));
   const [chefId, setChefId] = useState(localStorage.getItem("chefId"));
+  const [userId, setUserId] = useState(localStorage.getItem("userId"));
 
   // Sync when localStorage changes
   useEffect(() => {
@@ -17,6 +20,7 @@ export default function Navbar({ darkMode, setDarkMode }) {
       setToken(localStorage.getItem("token"));
       setRole(localStorage.getItem("role"));
       setChefId(localStorage.getItem("chefId"));
+      setUserId(localStorage.getItem("userId"));
     };
 
     window.addEventListener("storage", handleStorageChange);
@@ -43,6 +47,7 @@ export default function Navbar({ darkMode, setDarkMode }) {
         localStorage.removeItem("role");
         localStorage.removeItem("chefId");
         localStorage.removeItem("jwtToken");
+        localStorage.removeItem("userId");
 
         // Update state so navbar re-renders
         setToken(null);
@@ -61,13 +66,14 @@ export default function Navbar({ darkMode, setDarkMode }) {
         <nav className="navbar navbar-expand-lg navbar-dark" style={{ backgroundColor: "#d62828" }}>
           <div className="container-fluid">
             <NavLink
-                    to={role === "chef" ? "/chef/homepage" : "/user/homepage"}
-                    className={({ isActive }) =>
-                      `navbar-brand fw-bold nav-link ${isActive ? "active-link" : ""}`
-                    }
-                  >
-                    NewCooks
-                  </NavLink>
+              to={role === "chef" ? "/chef/homepage" : "/homepage"}
+              className={({ isActive }) =>
+                `navbar-brand fw-bold nav-link ${isActive ? "active-link" : ""}`
+              }
+            >
+              {/* <img src={newcooksLogo} alt="NewCooks Logo" style={{ height: "40px" }} /> */}
+              NewCooks
+            </NavLink>
 
             <button className="navbar-toggler" type="button" data-bs-toggle="collapse"
               data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
@@ -79,9 +85,9 @@ export default function Navbar({ darkMode, setDarkMode }) {
               <ul className="navbar-nav me-auto">
                 <li className="nav-item">
                   <NavLink
-                    to={role === "chef" ? "/chef/homepage" : "/user/homepage"}
+                    to={role === "chef" ? "/chef/homepage" : "/homepage"}
                     className={({ isActive }) =>
-                      `nav-link ${isActive ? "active-link" : ""}`
+                      `nav-link ${isActive ? "active-link" : ""} ${darkMode ? " dark-mode" : ""}`
                     }
                   >
                     Home
@@ -92,21 +98,32 @@ export default function Navbar({ darkMode, setDarkMode }) {
                   <NavLink
                     to={role === "chef" ? "/chef/recipes" : "/recipes"}
                     className={({ isActive }) =>
-                      `nav-link ${isActive ? "active-link" : ""}`
+                      `nav-link ${isActive ? "active-link" : ""} ${darkMode ? " dark-mode" : ""}`
                     }
                   >
                     {role === "chef" ? "My Recipes" : "Recipes"}
                   </NavLink>
                 </li>
 
+                {role === "user" && <li className="nav-item">
+                  <NavLink
+                    to="/user/favorites"
+                    className={({ isActive }) =>
+                      `nav-link ${isActive ? "active-link" : ""} ${darkMode ? " dark-mode" : ""}`
+                    }
+                  >
+                    Favorites
+                  </NavLink>
+                </li>}
+
                 {role && <li className="nav-item">
                   <NavLink
                     to={role === "chef" ? "/chef/chefprofile" : "user/userprofile"}
                     className={({ isActive }) =>
-                      `nav-link ${isActive ? "active-link" : ""}`
+                      `nav-link ${isActive ? "active-link" : ""} ${darkMode ? " dark-mode" : ""}`
                     }
                   >
-                    My Profile
+                    {role === "chef" ? "My Profile" : "Profile"}
                   </NavLink>
                 </li>}
 
@@ -114,7 +131,7 @@ export default function Navbar({ darkMode, setDarkMode }) {
                   <NavLink
                     to="/about"
                     className={({ isActive }) =>
-                      `nav-link ${isActive ? "active-link" : ""}`
+                      `nav-link ${isActive ? "active-link" : ""} ${darkMode ? " dark-mode" : ""}`
                     }
                   >
                     About
@@ -123,9 +140,9 @@ export default function Navbar({ darkMode, setDarkMode }) {
 
                 <li className="nav-item">
                   <NavLink
-                    to="/contact"
+                    to="/help#contact-us"
                     className={({ isActive }) =>
-                      `nav-link ${isActive ? "active-link" : ""}`
+                      `nav-link ${darkMode ? " dark-mode" : ""} ${isActive ? "active-link" : ""}`
                     }
                   >
                     Contact Us
@@ -153,9 +170,9 @@ export default function Navbar({ darkMode, setDarkMode }) {
                 />
 
                 <div className="me-3">
-                  {role === "chef" && chefId && <ChefSearchBar />}
-                  {/* {role === "user" && <UserSearchBar />} */}
+                  {role === "chef" ? <ChefSearchBar /> : <UserSearchBar />}
                 </div>
+
 
                 {!token ? (
                   <>

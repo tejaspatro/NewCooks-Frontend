@@ -15,7 +15,10 @@ const excludedEndpoints = [
   '/auth/',
   '/activate/',
   '/h2-console/',
-  '/test'
+  '/test',
+  '/error',
+  '/user/recipes',
+  '/recipes/rating/**'
 ];
 
 // Add a request interceptor to automatically add the Authorization header

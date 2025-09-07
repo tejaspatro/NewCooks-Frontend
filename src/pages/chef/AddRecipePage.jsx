@@ -3,6 +3,7 @@ import axiosApi from "../../api/axiosConfig";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import Uploader from "../../components/Uploader"; // Using the simplified Uploader component
+import { FaPlus, FaMinus } from "react-icons/fa";
 
 export default function AddRecipePage({darkMode}) {
   // State for text fields
@@ -11,7 +12,7 @@ export default function AddRecipePage({darkMode}) {
   const [ingredients, setIngredients] = useState("");
   const [utensils, setUtensils] = useState("");
   const [nutritionInfo, setNutritionInfo] = useState("");
-  const [instructions, setInstructions] = useState("");
+  const [instructions, setInstructions] = useState([""]);
 
   // State to hold the raw File objects
   const [thumbnailFile, setThumbnailFile] = useState(null);
@@ -22,10 +23,31 @@ export default function AddRecipePage({darkMode}) {
   
   const navigate = useNavigate();
 
+  // CHANGED: New functions to handle dynamic instructions
+  const handleAddInstruction = (index) => {
+    const newInstructions = [...instructions];
+    newInstructions.splice(index + 1, 0, "");
+    setInstructions(newInstructions);
+  };
+
+  const handleRemoveInstruction = (index) => {
+    if (instructions.length > 1) {
+      const newInstructions = instructions.filter((_, i) => i !== index);
+      setInstructions(newInstructions);
+    }
+  };
+
+  const handleChangeInstruction = (index, value) => {
+    const newInstructions = [...instructions];
+    newInstructions[index] = value;
+    setInstructions(newInstructions);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true); // Disable buttons on submission start
 
+    const filteredInstructions = instructions.filter(i => i.trim() !== "");
     // --- MERGED: Detailed validation from the old file ---
     if (!title.trim()) {
       Swal.fire("Title Error", "Please enter a recipe title.", "error");
@@ -57,13 +79,8 @@ export default function AddRecipePage({darkMode}) {
       setIsSubmitting(false);
       return;
     }
-    if (!instructions.trim()) {
-      Swal.fire("Error", "Please enter the instructions.", "error");
-      setIsSubmitting(false);
-      return;
-    }
-    if (!instructions.trim() || instructions.includes(".")) {
-      Swal.fire("Instructions Error", "Please separate instructions with commas, not periods(.)", "error");
+     if (filteredInstructions.length === 0) {
+      Swal.fire("Instructions Error", "Please enter at least one instruction.", "error");
       setIsSubmitting(false);
       return;
     }
@@ -84,7 +101,7 @@ export default function AddRecipePage({darkMode}) {
       ingredients: ingredients.split(",").map(i => i.trim()).filter(Boolean),
       utensils: utensils.split(",").map(u => u.trim()).filter(Boolean),
       nutritionInfo,
-      instructions: instructions.split(",").map(inst => inst.trim()).filter(Boolean),
+      instructions: filteredInstructions,
     };
     formData.append("recipe", JSON.stringify(recipeData));
 
@@ -159,9 +176,39 @@ export default function AddRecipePage({darkMode}) {
           <label className="form-label">Nutrition Info</label>
           <input className="form-control" value={nutritionInfo} onChange={(e) => setNutritionInfo(e.target.value)} />
         </div>
+        {/* CHANGED: Dynamic instructions input fields */}
         <div className="mb-3">
-          <label className="form-label">Instructions (comma separated)</label>
-          <textarea className="form-control" value={instructions} onChange={(e) => setInstructions(e.target.value)}  rows="3"/>
+          <label className="form-label">Instructions</label>
+          {instructions.map((instruction, index) => (
+            <div key={index} className="input-group mb-2 instruction-row">
+              <span className="input-group-text step-number">{index + 1}</span>
+              <textarea
+                className="form-control"
+                rows="1"
+                value={instruction}
+                onChange={(e) => handleChangeInstruction(index, e.target.value)}
+                placeholder="Enter instruction"
+              />
+              <button
+                className="btn btn-outline-secondary plus-btn"
+                type="button"
+                onClick={() => handleAddInstruction(index)}
+                title="Add instruction"
+              >
+                <FaPlus className="icon-plus" />
+              </button>
+              {instructions.length > 1 && (
+                <button
+                  className="btn btn-outline-danger minus-btn"
+                  type="button"
+                  onClick={() => handleRemoveInstruction(index)}
+                  title="Remove instruction"
+                >
+                  <FaMinus className="icon-minus" />
+                </button>
+              )}
+            </div>
+          ))}
         </div>
         <hr/>
         <div className="mb-3">

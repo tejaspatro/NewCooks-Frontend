@@ -479,20 +479,21 @@
 .reviews-bg-dark {
   background: repeating-linear-gradient(
       45deg,
-      #5a1e2b 0,
-      #5a1e2b 6px,
-      #802b40 6px,
-      #802b40 12px
+      #3b1f1b 0,
+      #3b1f1b 6px,
+      #5c3a32 6px,
+      #5c3a32 12px
     ),
     repeating-linear-gradient(
       -45deg,
-      #5a1e2b 0,
-      #5a1e2b 6px,
-      #802b40 6px,
-      #802b40 12px
+      #3b1f1b 0,
+      #3b1f1b 6px,
+      #5c3a32 6px,
+      #5c3a32 12px
     );
-    color: #a6c1ee;
+  color: #e0cfa0; /* light cream text for contrast */
 }
+
 
 /* Review Cards */
 .review-card:hover {

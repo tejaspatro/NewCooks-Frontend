@@ -84,7 +84,7 @@ export default function BackgroundLayout({ darkMode, children }) {
             />
 
             {/* Home button */}
-            <Link to="/" style={{ position: "fixed", top: 16, left: 16, zIndex: 4 }}>
+            <Link to="/homepage" style={{ position: "fixed", top: 16, left: 16, zIndex: 4 }}>
                 <button
                     className={`btn ${darkMode ? "btn-dark text-light" : "btn-light"}`}
                     style={{

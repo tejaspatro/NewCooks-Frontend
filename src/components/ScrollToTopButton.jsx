@@ -23,8 +23,8 @@ export default function ScrollToTopButton({ darkMode }) {
       onClick={scrollToTop}
       className="position-fixed rounded-circle d-flex align-items-center justify-content-center"
       style={{
-        bottom: "2rem",
-        right: "2rem",
+        bottom: "4.5rem",
+        right: "3rem",
         width: "50px",
         height: "50px",
         backgroundColor: darkMode ? "#ff0015ff" : "#ff7300",

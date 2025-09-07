@@ -1,35 +1,35 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosApi from "../api/axiosConfig";
-import "./recipe.css";
-import "./chef/profile.css";
 import placeHolderImg from "../images/Profile_avatar_placeholder_large.png";
-import { FaUpload, FaTrash } from "react-icons/fa";
-import axios from "axios";
 import Swal from "sweetalert2";
+import { useLoading } from "../context/LoadingContext";
+import { FaArrowLeft, FaUpload, FaTrash } from "react-icons/fa";
+import "./chef/profile.css"
 
 export default function UserProfilePage({ darkMode }) {
     const navigate = useNavigate();
+    const { startLoading, stopLoading } = useLoading();
+    const [error, setError] = useState(null);
     const [user, setUser] = useState(null);
     const [editable, setEditable] = useState(false);
-    const [loading, setLoading] = useState(true);
     const [updatedData, setUpdatedData] = useState({});
-    const [isUploading, setIsUploading] = useState(false);
-
-    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-    const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+    const [newProfilePictureFile, setNewProfilePictureFile] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const fileInputRef = useRef(null);
 
     useEffect(() => {
         async function fetchUser() {
+            startLoading("Loading profile...");
             try {
-                setLoading(true);
                 const response = await axiosApi.get("/user/userprofile");
                 setUser(response.data);
                 setUpdatedData(response.data);
             } catch (err) {
+                setError("Failed to fetch your profile. Please login again!!!");
                 console.error(err);
             } finally {
-                setLoading(false);
+                stopLoading();
             }
         }
         fetchUser();
@@ -41,81 +41,90 @@ export default function UserProfilePage({ darkMode }) {
     };
 
     const handleSave = async () => {
-        try {
-            if (isUploading) {
-                Swal.fire("Please wait", "Image is still uploading!", "info");
-                return;
-            }
+        setIsSubmitting(true);
+        const formData = new FormData();
+        formData.append("profile", JSON.stringify(updatedData));
 
-            const response = await axiosApi.put(`/user/userprofile`, updatedData);
+        if (newProfilePictureFile) {
+            formData.append("profilePictureFile", newProfilePictureFile);
+        }
+
+        try {
+            const response = await axiosApi.put(`/user/userprofile`, formData, {
+                headers: { "Content-Type": undefined },
+            });
             setUser(response.data);
+            setUpdatedData(response.data);
+            setNewProfilePictureFile(null);
             setEditable(false);
             Swal.fire("Success", "Profile updated successfully!", "success");
         } catch (err) {
             console.error(err);
             Swal.fire("Error", "Failed to update profile", "error");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     const handleCancel = () => {
         setUpdatedData(user);
+        setNewProfilePictureFile(null);
         setEditable(false);
     };
 
-    const handleImageUpload = async (e) => {
+    const handleFileSelect = (e) => {
         const file = e.target.files[0];
         if (!file) return;
-
-        setIsUploading(true);
-        Swal.fire({
-            title: "Uploading...",
-            text: "Please wait while your image is being uploaded",
-            didOpen: () => {
-                Swal.showLoading();
-            },
-            allowOutsideClick: false
-        });
-
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("upload_preset", uploadPreset);
-
-        try {
-            const res = await axios.post(
-                `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-                formData
-            );
-            setUpdatedData({ ...updatedData, profilePicture: res.data.secure_url });
-            Swal.close();
-            Swal.fire("Uploaded!", "Profile image uploaded successfully.", "success");
-        } catch (err) {
-            console.error(err);
-            Swal.fire("Error", "Failed to upload image", "error");
-        } finally {
-            setIsUploading(false);
-        }
+        setNewProfilePictureFile(file);
+        setUpdatedData({ ...updatedData, profilePicture: null });
     };
 
     const handleImageDelete = () => {
         setUpdatedData({ ...updatedData, profilePicture: null });
+        setNewProfilePictureFile(null);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
     };
 
-    if (loading) return <div>Loading...</div>;
-    if (!user) return <div>No profile found</div>;
+    let imageSource = updatedData.profilePicture || placeHolderImg;
+    if (newProfilePictureFile) {
+        imageSource = URL.createObjectURL(newProfilePictureFile);
+    }
+
+    if (error)
+        return (
+            <div className={`page-content${darkMode ? " dark-mode" : ""} bg-main text-center`}>
+                {error}
+            </div>
+        );
 
     return (
         <div className={`profile-page ${darkMode ? "dark-mode" : ""}`}>
             <div className="profile-container">
-                {/* Profile Image */}
-                <div className="profile-image-wrapper">
-                    <img
-                        src={updatedData.profilePicture || placeHolderImg}
-                        alt="Profile"
-                        className="profile-image"
-                    />
+                <button
+                    onClick={() => navigate(-1)}
+                    style={{
+                        position: "absolute",
+                        top: 60,
+                        left: 40,
+                        backgroundColor: "rgba(0, 0, 0, 0.1)",
+                        border: "none",
+                        cursor: "pointer",
+                        color: "#000",
+                        fontSize: "1.2rem",
+                        zIndex: 10,
+                    }}
+                    title="Go Back"
+                >
+                    <FaArrowLeft />
+                </button>
+
+                <div className="profile-image-wrapper" style={{ position: "relative" }}>
+                    <img src={imageSource} alt="Profile" className="profile-image" />
                     {editable && (
                         <div>
-                            {updatedData.profilePicture ? (
+                            {updatedData.profilePicture || newProfilePictureFile ? (
                                 <button
                                     className="image-action-btn"
                                     onClick={handleImageDelete}
@@ -130,7 +139,8 @@ export default function UserProfilePage({ darkMode }) {
                                         type="file"
                                         accept="image/*"
                                         style={{ display: "none" }}
-                                        onChange={handleImageUpload}
+                                        ref={fileInputRef}
+                                        onChange={handleFileSelect}
                                     />
                                 </label>
                             )}
@@ -138,23 +148,22 @@ export default function UserProfilePage({ darkMode }) {
                     )}
                 </div>
 
-                {/* Details */}
                 <div className="profile-details">
                     <label>Name</label>
                     <input
                         type="text"
                         name="name"
-                        value={updatedData.name}
+                        value={updatedData.name || ""}
                         onChange={handleChange}
-                        disabled={!editable || isUploading}
+                        disabled={!editable || isSubmitting}
                     />
 
                     <label>Email</label>
                     <input
                         type="email"
                         name="email"
-                        value={updatedData.email}
-                        disabled // usually not editable
+                        value={updatedData.email || ""}
+                        disabled
                     />
 
                     <label>About Me</label>
@@ -163,46 +172,36 @@ export default function UserProfilePage({ darkMode }) {
                             name="aboutMe"
                             value={updatedData.aboutMe || ""}
                             onChange={handleChange}
-                            disabled={isUploading}
+                            disabled={isSubmitting}
                         />
                     ) : (
-                        <div
-                            className={`about-box ${darkMode ? "text-white" : "text-dark"}`}
-                            style={{
-                                border: "1px solid grey",
-                                padding: "0.5rem",
-                                borderRadius: "5px",
-                                minHeight: "80px",
-                                backgroundColor: darkMode ? "#383838" : "white", // proper usage
-                            }}
-                        >
-
+                        <textarea readOnly>
                             {updatedData.aboutMe || "No details added."}
-                        </div>
+                        </textarea>
                     )}
 
-
-                    {/* Action Buttons */}
                     {!editable ? (
-                        <div className="d-flex justify-content-center mt-3">
-                            <button className="btn btn-warning" onClick={() => setEditable(true)}>
+                        <div className="profile-actions justify-content-center d-flex align-items-center">
+                            <button
+                                className="btn btn-warning"
+                                onClick={() => setEditable(true)}
+                            >
                                 Update Profile
                             </button>
                         </div>
-
                     ) : (
                         <div className="profile-actions">
                             <button
-                                className="btn btn-success"
+                                className="btn btn-warning"
                                 onClick={handleSave}
-                                disabled={isUploading}
+                                disabled={isSubmitting}
                             >
-                                Save
+                                {isSubmitting ? "Saving..." : "Save"}
                             </button>
                             <button
                                 className="btn btn-danger"
                                 onClick={handleCancel}
-                                disabled={isUploading}
+                                disabled={isSubmitting}
                             >
                                 Cancel
                             </button>

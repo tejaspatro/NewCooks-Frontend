@@ -4,6 +4,7 @@ import axiosApi from "../../api/axiosConfig";
 import Swal from "sweetalert2";
 import RecipeDetails from "../../components/RecipeDetails";
 import { useLoading } from "../../context/LoadingContext";
+import UserRecipeDetails from "../../components/UserRecipeDetails";
 
 export default function ChefRecipeDetailPage({ darkMode }) {
   const { chefId, recipeId } = useParams();
@@ -36,7 +37,7 @@ export default function ChefRecipeDetailPage({ darkMode }) {
   const handleGoBack = () => {
     startLoading("Taking you back...");
     setTimeout(() => {
-      navigate(-1);
+      navigate(`/chef/recipes`);
       stopLoading();
     }); // small delay so loader shows briefly
   };
@@ -49,7 +50,7 @@ export default function ChefRecipeDetailPage({ darkMode }) {
     }
     startLoading("Opening edit page...");
     setTimeout(() => {
-      navigate(`/chef/${chefId}/recipes/${recipeId}/edit`);
+      navigate(`/chef/recipes/${recipeId}/edit`);
       stopLoading();
     });
   };
@@ -140,7 +141,7 @@ export default function ChefRecipeDetailPage({ darkMode }) {
             className="btn btn-warning me-2"
             disabled={deleting}
           >
-            ← Go Back
+            ← My Recipes
           </button>
         </div>
 
@@ -187,7 +188,7 @@ export default function ChefRecipeDetailPage({ darkMode }) {
 
       {/* Recipe Content */}
       {!loading && !error && recipe && (
-        <RecipeDetails recipe={recipe} darkMode={darkMode} />
+        <UserRecipeDetails recipe={recipe} darkMode={darkMode} />
       )}
     </div>
   );

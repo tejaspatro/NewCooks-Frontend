@@ -129,3 +129,72 @@
 .profile-actions:has(button:only-child) {
   justify-content: center;
 }
+
+/* Step Number Background (light golden) */
+.step-number {
+  background-color: #fcf5d2;
+  color: #b37400;
+  font-weight: 600;
+  border: 1px solid gold;
+  border-radius: 0%;
+}
+
+/* Light mode: Plus button yellow, minus button normal */
+.plus-btn .icon-plus {
+  color: #ffc400;
+  transition: transform 0.2s;
+}
+.plus-btn:hover .icon-plus,
+.plus-btn:focus .icon-plus {
+  transform: scale(1.3);
+  color: #ffd700;
+}
+
+/* Hide button border on icon scale for "+" */
+.plus-btn {
+  border: none !important;
+  background: transparent;
+  box-shadow: none;
+}
+.plus-btn:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Minus icon: red, only the icon scales on hover */
+.minus-btn .icon-minus {
+  color: #dc3545;
+  transition: transform 0.2s;
+}
+.minus-btn:hover .icon-minus,
+.minus-btn:focus .icon-minus {
+  transform: scale(1.3);
+  color: #ff7272;
+}
+.minus-btn {
+  border: none !important;
+  background: transparent;
+  box-shadow: none;
+}
+.minus-btn:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Universal: for darker color adaptation (dark mode) */
+[data-bs-theme="dark"] .instruction-row,
+.dark-mode .instruction-row {
+  background: #342221;
+}
+[data-bs-theme="dark"] .step-number,
+.dark-mode .step-number {
+  background-color: #5a3c00;
+  color: #ffd700;
+}
+/* Adjust text areas and buttons if needed for dark backgrounds */
+/* [data-bs-theme="dark"] .form-control,
+.dark-mode .form-control {
+  background: #1a1a1a;
+  color: #ffe5b4;
+  border-color: #3a3939;
+} */

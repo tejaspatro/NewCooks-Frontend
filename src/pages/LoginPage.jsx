@@ -46,7 +46,7 @@ export default function LoginPage({ darkMode }) {
         if (role === "chef") {
           navigate("/chef/homepage");
         } else {
-          navigate("/user/homepage");
+          navigate("/homepage");
         }
       });
     } catch (err) {

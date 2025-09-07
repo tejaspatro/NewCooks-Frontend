@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import axiosApi from "../../api/axiosConfig";
 import Swal from "sweetalert2";
 import Uploader from "../../components/Uploader"; // Ensure you have the simplified Uploader.jsx from the previous answer
+import { FaPlus, FaMinus } from "react-icons/fa";
+
 
 export default function EditRecipeDetailPage({ darkMode }) {
   const { recipeId } = useParams();
@@ -40,7 +42,7 @@ export default function EditRecipeDetailPage({ darkMode }) {
         setIngredients((r.ingredients || []).join(", "));
         setUtensils((r.utensils || []).join(", "));
         setNutrition(r.nutritionInfo || "");
-        setInstructions((r.instructions || []).join(", "));
+        setInstructions(r.instructions && r.instructions.length > 0 ? r.instructions : [""]);
         setThumbnailUrl(r.thumbnail || "");
         setImageUrls(r.images || []);
       } catch (err) {
@@ -52,6 +54,26 @@ export default function EditRecipeDetailPage({ darkMode }) {
     };
     fetchRecipe();
   }, [recipeId, navigate]);
+
+  // CHANGED: New functions to handle instructions
+  const handleAddInstruction = (index) => {
+    const newInstructions = [...instructions];
+    newInstructions.splice(index + 1, 0, "");
+    setInstructions(newInstructions);
+  };
+
+  const handleRemoveInstruction = (index) => {
+    if (instructions.length > 1) {
+      const newInstructions = instructions.filter((_, i) => i !== index);
+      setInstructions(newInstructions);
+    }
+  };
+
+  const handleChangeInstruction = (index, value) => {
+    const newInstructions = [...instructions];
+    newInstructions[index] = value;
+    setInstructions(newInstructions);
+  };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -79,13 +101,15 @@ export default function EditRecipeDetailPage({ darkMode }) {
 
     const formData = new FormData();
 
+    const filteredInstructions = instructions.filter(i => i.trim() !== "");
+
     const recipeData = {
       title,
       description,
       ingredients: ingredients.split(",").map((s) => s.trim()).filter(Boolean),
       utensils: utensils.split(",").map((s) => s.trim()).filter(Boolean),
       nutritionInfo: nutrition,
-      instructions: instructions.split(",").map((s) => s.trim()).filter(Boolean),
+      instructions: filteredInstructions,
       thumbnail: thumbnailUrl,
       images: imageUrls,
     };
@@ -128,21 +152,21 @@ export default function EditRecipeDetailPage({ darkMode }) {
   };
 
   const handleCancel = () => {
-      Swal.fire({
-        title: "Are you sure?",
-        text: "Your changes will not be saved if you cancel.",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-        confirmButtonText: "Yes, Discard Changes",
-        cancelButtonText: "No, Stay Here"
-      }).then((result) => {
-        if (result.isConfirmed) {
-          navigate(-1); // Go back to the previous page
-        }
-      });
-    };
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Your changes will not be saved if you cancel.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, Discard Changes",
+      cancelButtonText: "No, Stay Here"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate(-1); // Go back to the previous page
+      }
+    });
+  };
 
   if (loading) return <p>Loading recipe...</p>;
 
@@ -176,10 +200,42 @@ export default function EditRecipeDetailPage({ darkMode }) {
           <label className="form-label">Nutrition Info</label>
           <textarea className="form-control" rows="2" value={nutrition} onChange={(e) => setNutrition(e.target.value)} />
         </div>
+        
+        {/* CHANGED: Dynamic instructions input fields */}
         <div className="mb-3">
-          <label className="form-label">Instructions (comma separated)</label>
-          <textarea className="form-control" rows="3" value={instructions} onChange={(e) => setInstructions(e.target.value)} />
+          <label className="form-label">Instructions</label>
+          {instructions.map((instruction, index) => (
+            <div key={index} className="input-group mb-2 instruction-row">
+              <span className="input-group-text step-number">{index + 1}</span>
+              <textarea
+                className="form-control"
+                rows="1"
+                value={instruction}
+                onChange={(e) => handleChangeInstruction(index, e.target.value)}
+                placeholder="Enter instruction"
+              />
+              <button
+                className="btn btn-outline-secondary plus-btn"
+                type="button"
+                onClick={() => handleAddInstruction(index)}
+                title="Add instruction"
+              >
+                <FaPlus className="icon-plus" />
+              </button>
+              {instructions.length > 1 && (
+                <button
+                  className="btn btn-outline-danger minus-btn"
+                  type="button"
+                  onClick={() => handleRemoveInstruction(index)}
+                  title="Remove instruction"
+                >
+                  <FaMinus className="icon-minus" />
+                </button>
+              )}
+            </div>
+          ))}
         </div>
+
         <hr />
         <div className="mb-3">
           <label className="form-label">Thumbnail Image</label>
