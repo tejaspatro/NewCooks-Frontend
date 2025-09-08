@@ -14,6 +14,7 @@ import { FaBookOpen, FaStar, FaHeart } from "react-icons/fa";
 import user1 from "../../images/Chef/chefhero/user1.jpeg";
 import user2 from "../../images/Chef/chefhero/user2.jpeg";
 import user3 from "../../images/Chef/chefhero/user3.jpeg";
+import Swal from "sweetalert2";
 
 export default function Homepage({ darkMode }) {
   const [userData, setUserData] = useState(null);
@@ -58,6 +59,27 @@ export default function Homepage({ darkMode }) {
       { breakpoint: 768, settings: { slidesToShow: 1, centerMode: false } }
     ],
   };
+
+
+
+  function handleCardClick(recipeId) {
+    if (role !== "user") {
+      Swal.fire({
+        icon: "warning",
+        title: "Login Required",
+        text: "Please login as a user to view recipes.",
+        showCancelButton: true,
+        confirmButtonText: "Login",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = "/login";
+        }
+      });
+    } else {
+      window.location.href = `/user/recipes/${recipeId}`;
+    }
+  }
+
 
   return (
     <>
@@ -175,7 +197,11 @@ export default function Homepage({ darkMode }) {
           <Slider {...sliderSettings} className="chef-homepage-reviews-slider">
             {mostReviewed.map((recipe) => (
               <div key={recipe.recipeId} className="px-3">
-                <Link to={`/user/recipes/${recipe.recipeId}`} className="text-decoration-none">
+                <div
+                  onClick={() => handleCardClick(recipe.recipeId)}
+                  className="text-decoration-none"
+                  style={{ cursor: "pointer" }}
+                >
                   <div className={`chef-homepage-review-card ${darkMode ? "chef-homepage-review-card-dark" : "chef-homepage-review-card-light"}`}>
                     <img
                       src={recipe.thumbnail || recipePlaceHolder}
@@ -184,16 +210,19 @@ export default function Homepage({ darkMode }) {
                     />
                     <div className="chef-homepage-review-card-body">
                       <h5 className="fw-bold mb-2" style={{ color: "#1dff04ff" }}>{recipe.title}</h5>
-                      <p style={{ color: "#00f6feff" }}><i className="bi bi-chat-dots me-2"></i> {recipe.totalReviews || 0} Reviews</p>
+                      <p style={{ color: "#00f6feff" }}>
+                        <i className="bi bi-chat-dots me-2"></i> {recipe.totalReviews || 0} Reviews
+                      </p>
                     </div>
                   </div>
-                </Link>
+                </div>
               </div>
             ))}
           </Slider>
         ) : (
           <p className={`text-center text-dark`}>No viewed recipes found.</p>
         )}
+
       </section>
 
       {/* analytics */}

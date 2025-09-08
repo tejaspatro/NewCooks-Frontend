@@ -3,7 +3,7 @@ import axios from 'axios';
 // Create a new Axios instance
 const axiosApi = axios.create({
   // Your backend URL from application.properties
-  baseURL: 'https://newcooks-backend-latest.onrender.com/newcooks',
+  baseURL: 'https://newcooks-backend-latest.onrender.com',
   headers: {
     'Content-Type': 'application/json',
   },
