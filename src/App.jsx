@@ -73,7 +73,7 @@ function AppContent({ darkMode, setDarkMode }) {
             }/>
 
           {/* user pages */}
-          <Route path="/homepage" element={<HomePage darkMode={darkMode}/>} />
+          <Route path="/" element={<HomePage darkMode={darkMode}/>} />
           <Route path="/user/recipes/:recipeId" element={<UserRecipeDetailPage darkMode={darkMode} />} />
           <Route path="/recipes" element={<RecipesPage darkMode={darkMode} />} />
           <Route path="/user/userprofile" element={<UserProfilePage darkMode={darkMode} />} />
