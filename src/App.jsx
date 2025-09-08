@@ -25,7 +25,7 @@ import ScrollToTopButton from "./components/ScrollToTopButton";
 import HelpPage from "./pages/Help";
 import Footer from "./components/Footer";
 import AboutPage from "./pages/AboutPage";
-import FavoritesPage from "./pages/Favouritespage";
+import FavoritesPage from "./pages/FavouritesPage";
 
 
 
