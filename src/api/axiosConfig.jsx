@@ -12,9 +12,9 @@ const axiosApi = axios.create({
 // A list of URL path prefixes that do NOT require a JWT token
 // These endpoints are for login and registration
 const excludedEndpoints = [
-  '/auth/',
-  '/activate/',
-  '/h2-console/',
+  '/auth/**',
+  '/activate/**',
+  '/h2-console/**',
   '/test',
   '/error',
   '/user/recipes',

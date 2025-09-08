@@ -25,23 +25,39 @@ export default function Homepage({ darkMode }) {
 
 
   useEffect(() => {
-    async function fetchUserHomeData() {
-      try {
-        const [userRes, mostReviewedRes, analyticsRes] = await Promise.all([
-          axiosApi.get("/user/userprofile"),
-          axiosApi.get("/recipes/most-reviewed/5"),
-          axiosApi.get("/user/analytics")
-        ]);
-        setRole(localStorage.getItem("role"));
-        setUserData(userRes.data);
-        setMostReviewed(mostReviewedRes.data);
-        setAnalytics(analyticsRes.data);
-      } catch (err) {
-        console.error(err);
+  async function fetchUserHomeData() {
+    try {
+      const role = localStorage.getItem("role");
+      setRole(role);
+
+      const requests = [axiosApi.get("/recipes/most-reviewed/5")];
+
+      if (role === "user") {
+        requests.push(axiosApi.get("/user/userprofile"));
+        requests.push(axiosApi.get("/user/analytics"));
       }
+
+      const responses = await Promise.all(requests);
+
+      // Destructure based on what you requested
+      const mostReviewedRes = responses[0];
+      setMostReviewed(mostReviewedRes.data);
+
+      if (role === "user") {
+        const userRes = responses[1];
+        const analyticsRes = responses[2];
+        setUserData(userRes.data);
+        setAnalytics(analyticsRes.data);
+      }
+
+    } catch (err) {
+      console.error(err);
     }
-    fetchUserHomeData();
-  }, []);
+  }
+
+  fetchUserHomeData();
+}, []);
+
 
   useEffect(() => {
     setAnimationKey(prevKey => prevKey + 1);
