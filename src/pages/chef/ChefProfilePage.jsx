@@ -53,10 +53,11 @@ export default function ChefProfilePage({ darkMode }) {
     }
 
     try {
-      const response = await axiosApi.put(`/chef/chefprofile`, formData, {
+      const response = await axiosApi.put(`/user/userprofile`, formData, {
         headers: { "Content-Type": undefined },
       });
-      setChef(response.data);
+
+      setUser(response.data);
       setUpdatedData(response.data);
       setNewProfilePictureFile(null);
       setEditable(false);
@@ -68,6 +69,7 @@ export default function ChefProfilePage({ darkMode }) {
       setIsSubmitting(false);
     }
   };
+
 
   const handleCancel = () => {
     setUpdatedData(chef);
@@ -107,23 +109,23 @@ export default function ChefProfilePage({ darkMode }) {
   return (
     <div className={`profile-page ${darkMode ? "dark-mode" : ""}`}>
       <div className="profile-container">
-          <button
-            onClick={() => navigate(-1)}
-            style={{
-              position: "absolute",
-              top: 45,
-              left: 40,
-              backgroundColor: "rgba(0, 0, 0, 0.1)",
-              border: "none",
-              cursor: "pointer",
-              color: "#000", // adjust color as needed
-              fontSize: "1.2rem",
-              zIndex: 10,
-            }}
-            title="Go Back"
-          >
-            <FaArrowLeft />
-          </button>
+        <button
+          onClick={() => navigate(-1)}
+          style={{
+            position: "absolute",
+            top: 45,
+            left: 40,
+            backgroundColor: "rgba(0, 0, 0, 0.1)",
+            border: "none",
+            cursor: "pointer",
+            color: "#000", // adjust color as needed
+            fontSize: "1.2rem",
+            zIndex: 10,
+          }}
+          title="Go Back"
+        >
+          <FaArrowLeft />
+        </button>
         <div className="profile-image-wrapper" style={{ position: "relative" }}>
 
           <img src={imageSource} alt="Profile" className="profile-image" />
