@@ -1,48 +1,44 @@
 import axios from 'axios';
 
-// Create a new Axios instance
+// Create a new Axios instance with your backend's base URL
 const axiosApi = axios.create({
-  // Your backend URL from application.properties
-  baseURL: 'https://newcooks-backend-latest.onrender.com/newcooks',
+  baseURL: 'https://newcooksbackend-latest-1.onrender.com', // Your Render backend URL
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// A list of URL path prefixes that do NOT require a JWT token
-// These endpoints are for login and registration
-const excludedEndpoints = [
-  '/auth/**',
-  '/activate/**',
-  '/h2-console/**',
-  '/test',
-  '/error',
-  '/user/recipes',
-  '/recipes/rating/**'
+const excludedPatterns = [
+  /^\/auth\/.*/,
+  /^\/activate\/.*/,
+  /^\/h2-console\/.*/,
+  /^\/test$/,
+  /^\/error$/,
+  /^\/user\/recipes$/,
+  /^\/recipes\/rating\/.*/
 ];
 
-// Add a request interceptor to automatically add the Authorization header
+// Add a request interceptor to automatically attach the JWT to protected requests
 axiosApi.interceptors.request.use(
   (config) => {
-    // Check if the current request URL is in the excluded list
-    const isExcluded = excludedEndpoints.some(endpoint => 
-      config.url.startsWith(endpoint)
-    );
+    // Test the request URL against our regex patterns
+    const isExcluded = excludedPatterns.some(pattern => pattern.test(config.url));
 
+    // Retrieve the token from local storage
     const token = localStorage.getItem('token');
 
-    // Only add the token if it exists and the endpoint is not excluded
+    // If a token exists and the endpoint is NOT in our excluded list,
+    // add the Authorization header.
     if (token && !isExcluded) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
+
     return config;
   },
   (error) => {
+    // Handle request errors
     return Promise.reject(error);
   }
 );
 
 export default axiosApi;
-
-
-
