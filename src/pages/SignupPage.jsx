@@ -49,11 +49,25 @@ export default function SignupPage({ darkMode }) {
         confirmButtonText: "Go to Login"
       }).then(() => navigate("/login"));
     } catch (err) {
-      const msg = err.response?.data?.message || "Signup failed";
+      let msg = "Signup failed";
+
+      // Check if the backend returned a response
+      if (err.response?.data) {
+        const data = err.response.data;
+
+        // Try common formats for backend error messages
+        msg = data.message || data.error || JSON.stringify(data);
+      } else if (err.message) {
+        // Fallback to axios/network error message
+        msg = err.message;
+      }
+
+      console.error("Signup error:", err.response?.data || err); // For debugging
       Swal.fire("Signup Error", msg, "error");
     } finally {
       setLoading(false);
     }
+
   };
 
   return (
