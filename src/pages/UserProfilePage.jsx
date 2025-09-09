@@ -167,18 +167,13 @@ export default function UserProfilePage({ darkMode }) {
                     />
 
                     <label>About Me</label>
-                    {editable ? (
-                        <textarea
-                            name="aboutMe"
-                            value={updatedData.aboutMe || ""}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                        />
-                    ) : (
-                        <textarea readOnly>
-                            {updatedData.aboutMe || "No details added."}
-                        </textarea>
-                    )}
+                    <textarea
+                        name="aboutMe"
+                        value={updatedData.aboutMe || "No details added."}
+                        readOnly={!editable}
+                        onChange={editable ? handleChange : undefined}
+                    />
+
 
                     {!editable ? (
                         <div className="profile-actions justify-content-center d-flex align-items-center">
