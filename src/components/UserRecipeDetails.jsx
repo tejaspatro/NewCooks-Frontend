@@ -9,6 +9,7 @@ import HoverCardPortal from "./HoverReviewCardPortal";
 import HeartToggle from "./HeartToggle";
 
 export default function UserRecipeDetails({ recipe, darkMode }) {
+    const [fullscreen, setFullscreen] = useState(false);
     const [reviewsData, setReviewsData] = useState([]);
     const [ratingsData, setRatingsData] = useState({
         average: 0,
@@ -342,6 +343,58 @@ export default function UserRecipeDetails({ recipe, darkMode }) {
                     </div>
                 </>
             </DiagonalCard>
+
+            {fullscreen && (
+                <div
+                    className="modal d-block"
+                    tabIndex="-1"
+                    style={{ backgroundColor: "rgba(0,0,0,0.85)" }}
+                >
+                    <div className="modal-dialog modal-fullscreen">
+                        <div className="modal-content bg-transparent border-0 d-flex align-items-center justify-content-center">
+                            <button
+                                type="button"
+                                className="btn-close btn-close-white position-absolute top-0 end-0 m-3 z-3"
+                                onClick={() => setFullscreen(false)}
+                                aria-label="Close"
+                            ></button>
+
+                            <div
+                                id="fullscreenCarousel"
+                                className="carousel slide w-75"
+                                data-bs-ride="carousel"
+                            >
+                                <div className="carousel-inner">
+                                    {images.map((img, idx) => (
+                                        <div
+                                            key={idx}
+                                            className={`carousel-item ${idx === 0 ? "active" : ""}`}
+                                        >
+                                            <img
+                                                src={img}
+                                                alt={`Fullscreen ${idx + 1}`}
+                                                className="d-block w-100"
+                                                style={{ objectFit: "contain", maxHeight: "90vh" }}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {images.length > 1 && (
+                                    <>
+                                        <button className="carousel-control-prev" type="button" data-bs-target="#fullscreenCarousel" data-bs-slide="prev">
+                                            <i className="bi bi-chevron-left fs-1" style={{ color: "#FFD700" }}></i>
+                                        </button>
+                                        <button className="carousel-control-next" type="button" data-bs-target="#fullscreenCarousel" data-bs-slide="next">
+                                            <i className="bi bi-chevron-right fs-1" style={{ color: "#FFD700" }}></i>
+                                        </button>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* chef details for user */}
             {role === "user" && chefProfile && (<DiagonalCard index={0} darkMode={darkMode} style={{ width: "fit-content" }}>
