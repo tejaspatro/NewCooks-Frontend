@@ -742,7 +742,7 @@ export default function UserRecipeDetails({ recipe, darkMode }) {
                         ))}
                     </ul>
                 ) : (
-                    <p>No reviews yet. Be the first to review!</p>
+                    <p>No reviews yet.</p>
                 )}
             </DiagonalCard>
         </>
