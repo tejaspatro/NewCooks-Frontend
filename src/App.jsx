@@ -1,5 +1,5 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage/HomePage";
@@ -34,6 +34,19 @@ function App() {
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("darkMode") === "true"
   );
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const role = localStorage.getItem("role");
+
+    if (role === "chef") {
+      navigate("/chef/homepage");
+    } else if (role === "user") {
+      navigate("/"); // user homepage
+    }
+  }, [navigate]);
+
 
   return (
     <Router>
