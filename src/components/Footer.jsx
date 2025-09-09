@@ -46,9 +46,9 @@ export default function Footer() {
           <div className="col-md-4 mb-4">
             <h5 className="fw-bold text-primary">Contact Us</h5>
             <ul className="list-unstyled">
-              <li><FaEnvelope className="me-2" /> support@newcooks.com</li>
-              <li><FaPhone className="me-2" /> +91 98765 43210</li>
-              <li><FaMapMarkerAlt className="me-2" /> Bhubaneswar, Odisha, India</li>
+              <li><FaEnvelope className="me-2" /> ptrotejas@gmail.com</li>
+              <li><FaPhone className="me-2" /> +91 80185 37027</li>
+              <li><FaMapMarkerAlt className="me-2" /> ITER, Bhubaneswar, Odisha, India</li>
             </ul>
             <div className="d-flex gap-3 mt-3">
               <a href="https://facebook.com" className="text-link-hover fs-5"><FaFacebook /></a>
