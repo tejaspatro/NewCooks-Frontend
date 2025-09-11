@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
+import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaFacebook, FaInstagram, FaTwitter, FaLinkedin } from "react-icons/fa";
 
 export default function Footer() {
   // Get role directly from localStorage
@@ -46,14 +46,15 @@ export default function Footer() {
           <div className="col-md-4 mb-4">
             <h5 className="fw-bold text-primary">Contact Us</h5>
             <ul className="list-unstyled">
-              <li><FaEnvelope className="me-2" /> ptrotejas@gmail.com</li>
+              <li><FaEnvelope className="me-2" /> patrotejas@gmail.com</li>
               <li><FaPhone className="me-2" /> +91 80185 37027</li>
               <li><FaMapMarkerAlt className="me-2" /> ITER, Bhubaneswar, Odisha, India</li>
             </ul>
             <div className="d-flex gap-3 mt-3">
-              <a href="https://facebook.com" className="text-link-hover fs-5"><FaFacebook /></a>
-              <a href="https://instagram.com" className="text-link-hover fs-5"><FaInstagram /></a>
-              <a href="https://twitter.com" className="text-link-hover fs-5"><FaTwitter /></a>
+              <a href="https://www.facebook.com/tejas.patro" className="text-link-hover fs-5"><FaFacebook /></a>
+              <a href="https://www.instagram.com/tejas_patro/" className="text-link-hover fs-5"><FaInstagram /></a>
+              <a href="https://x.com/tejas_patro" className="text-link-hover fs-5"><FaTwitter /></a>
+              <a href="https://www.linkedin.com/in/tejaspatro/" className="text-link-hover fs-5"><FaLinkedin /></a>
             </div>
           </div>
         </div>
