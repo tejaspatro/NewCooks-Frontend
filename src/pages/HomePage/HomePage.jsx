@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axiosApi from "../../api/axiosConfig";
 import userHeroImage from "../../images/Greek_salad_test.jpg";
 import userHeroVideo from "../../images/NewCooks_Hero_Video_Generation_fade.mp4";
@@ -22,41 +22,43 @@ export default function Homepage({ darkMode }) {
   const [animationKey, setAnimationKey] = useState(0);
   const [analytics, setAnalytics] = useState(null);
   const [role, setRole] = useState(null);
+  const navigate = useNavigate();
+
 
 
   useEffect(() => {
-  async function fetchUserHomeData() {
-    try {
-      const role = localStorage.getItem("role");
-      setRole(role);
+    async function fetchUserHomeData() {
+      try {
+        const role = localStorage.getItem("role");
+        setRole(role);
 
-      const requests = [axiosApi.get("/recipes/most-reviewed/5")];
+        const requests = [axiosApi.get("/recipes/most-reviewed/5")];
 
-      if (role === "user") {
-        requests.push(axiosApi.get("/user/userprofile"));
-        requests.push(axiosApi.get("/user/analytics"));
+        if (role === "user") {
+          requests.push(axiosApi.get("/user/userprofile"));
+          requests.push(axiosApi.get("/user/analytics"));
+        }
+
+        const responses = await Promise.all(requests);
+
+        // Destructure based on what you requested
+        const mostReviewedRes = responses[0];
+        setMostReviewed(mostReviewedRes.data);
+
+        if (role === "user") {
+          const userRes = responses[1];
+          const analyticsRes = responses[2];
+          setUserData(userRes.data);
+          setAnalytics(analyticsRes.data);
+        }
+
+      } catch (err) {
+        console.error(err);
       }
-
-      const responses = await Promise.all(requests);
-
-      // Destructure based on what you requested
-      const mostReviewedRes = responses[0];
-      setMostReviewed(mostReviewedRes.data);
-
-      if (role === "user") {
-        const userRes = responses[1];
-        const analyticsRes = responses[2];
-        setUserData(userRes.data);
-        setAnalytics(analyticsRes.data);
-      }
-
-    } catch (err) {
-      console.error(err);
     }
-  }
 
-  fetchUserHomeData();
-}, []);
+    fetchUserHomeData();
+  }, []);
 
 
   useEffect(() => {
@@ -95,6 +97,25 @@ export default function Homepage({ darkMode }) {
       window.location.href = `/user/recipes/${recipeId}`;
     }
   }
+
+  const handleFavoritesClick = (e) => {
+    if (role !== "user") {
+      e.preventDefault();
+      Swal.fire({
+        icon: "info",
+        title: "Login Required",
+        text: "Please log in to access your favorites.",
+        confirmButtonText: "Go to Login",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = "/login";
+        }
+        else{
+          window.location.href = "/user/favorites";
+        }
+      });
+    }
+  };
 
 
   return (
@@ -185,9 +206,14 @@ export default function Homepage({ darkMode }) {
             <Link to="/recipes" className="btn btn-primary px-4 py-2 text-white hero-btn">
               Browse Recipes
             </Link>
-            <Link to="/user/favorites" className="btn btn-warning px-4 py-2 hero-btn">
+            <Link
+              to="/user/favorites"
+              className="btn btn-warning px-4 py-2 hero-btn"
+              onClick={handleFavoritesClick}
+            >
               Your Favorites
             </Link>
+
           </div>
 
           {/* Divider with pan icon and smoke */}

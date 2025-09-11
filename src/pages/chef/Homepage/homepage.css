@@ -578,8 +578,24 @@
 }
 
 /* --- Light Mode Grid Background --- */
+/* Animate grid background */
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Light mode animated grid background */
 .help-grid-light {
-  background: linear-gradient(135deg, #ffe5b4, #ff9a76, #ffd700);
+  background: linear-gradient(135deg, #ffe5b4, #ff9a76, #ffd700, #ffe5b4);
+  background-size: 600% 600%;
+  animation: gradientMove 15s ease infinite;
   position: relative;
 }
 
@@ -595,16 +611,11 @@
   opacity: 0.3;
 }
 
-/* Help Cards Background - Light mode */
-.help-grid-light .help-card {
-  background-color: rgb(250, 246, 0); /* semi-transparent white */
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
-}
-
-/* --- Dark Mode Grid Background --- */
+/* Dark mode animated grid background */
 .help-grid-dark {
-  background: linear-gradient(135deg, #5a0000, #cc3700, #b38f00);
+  background: linear-gradient(135deg, #5a0000, #cc3700, #b38f00, #5a0000);
+  background-size: 600% 600%;
+  animation: gradientMove 15s ease infinite;
   position: relative;
 }
 
@@ -620,21 +631,46 @@
   opacity: 0.3;
 }
 
-/* Help Cards Background - Dark mode */
-.help-grid-dark .help-card {
-  background-color: rgba(40, 20, 20, 0.85); /* semi-transparent deep maroon */
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 2px 8px rgb(255 255 255 / 0.1);
-  color: #f8f8f8; /* light text for contrast */
+/* Help Cards hover effect */
+.help-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
 }
 
-/* Ensure text colors inside cards in dark mode */
+.help-card:hover {
+  transform: translateY(-10px) scale(1.03);
+  box-shadow: 0 15px 25px rgba(0,0,0,0.35);
+}
+
+.help-btn {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.help-btn:hover {
+  transform: scale(1.05);
+  opacity: 1 !important;
+}
+
+.help-card h5 {
+  font-size: 1.5rem;
+}
+
+.help-section .container {
+  max-width: 1200px;
+}
+
+.help-card {
+  background-color: rgba(250, 246, 0, 0.95);
+  border: none;
+}
+
+.help-grid-dark .help-card {
+  background-color: rgba(40, 20, 20, 0.95);
+  border: none;
+  color: #f8f8f8;
+}
+
 .help-grid-dark .help-card h5,
 .help-grid-dark .help-card p,
 .help-grid-dark .help-card a {
   color: #f8f8f8 !important;
-}
-
-.help-btn {
-  opacity: 0.9 !important;
 }
