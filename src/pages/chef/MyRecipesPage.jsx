@@ -5,6 +5,7 @@ import axiosApi from "../../api/axiosConfig";
 import "../recipe.css";
 import RecipeCard from "../../components/RecipeCard";
 import { useLoading } from "../../context/LoadingContext";
+import { FaPlus } from "react-icons/fa";
 
 export default function MyRecipesPage({ darkMode }) {
   const { chefId } = useParams();
@@ -46,21 +47,35 @@ export default function MyRecipesPage({ darkMode }) {
       className={`recipes-container bg-main bg-dots page-content${darkMode ? " dark-mode" : ""}`}
       style={{ position: "relative" }}
     >
-      <h1
-        className="all-recipes-heading"
-        style={{ textAlign: "center", justifyContent: "center", width: "100%" }}
+      <div
+        className="d-flex justify-content-between align-items-center my-4"
       >
-        My Recipes
-      </h1>
+        {/* Left Side: Go Back Button */}
+        <button
+          onClick={() => window.history.back()} // Or use React Router's navigate(-1)
+          className="btn btn-danger"
+        >
+          ← Go Back
+        </button>
 
-      {/* Add New Recipe button */}
-      <button
-        onClick={handleAddClick}
-        className="btn btn-warning"
-        style={{ position: "absolute", top: "2.5rem", right: "2rem" }}
-      >
-        + Add New Recipe
-      </button>
+        {/* Center: Title */}
+        <h1 className="all-recipes-heading text-center m-0">
+          My Recipes
+        </h1>
+
+        {/* Right Side: Responsive Add Button */}
+        <button
+          onClick={handleAddClick}
+          className="btn btn-warning"
+        >
+          {/* This text is ONLY visible on medium screens and larger */}
+          <span className="d-none d-md-inline">+ Add New Recipe</span>
+
+          {/* This "+" is ONLY visible on small screens */}
+          <span className="d-md-none">+</span>
+        </button>
+      </div>
+
 
       {/* Message if no recipes */}
       {recipes.length === 0 ? (

@@ -150,7 +150,7 @@ export default function Navbar({ darkMode, setDarkMode }) {
                 </li>
               </ul>
 
-              <div className="d-flex align-items-center ms-right">
+              <div className="d-lg-flex align-items-center ms-right">
                 <i
                   id="theme-toggle"
                   className={`fa-solid ${darkMode ? "fa-sun" : "fa-moon"} me-2`}
@@ -169,7 +169,7 @@ export default function Navbar({ darkMode, setDarkMode }) {
                   onMouseLeave={(e) => (e.currentTarget.style.transform = "rotate(0deg)")}
                 />
 
-                <div className="me-3">
+                <div className="my-3 my-lg-0 me-lg-3">
                   {role === "chef" ? <ChefSearchBar /> : <UserSearchBar />}
                 </div>
 

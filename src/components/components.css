@@ -11,30 +11,58 @@
   height: 7rem;
   border-radius: 50%;
   background: radial-gradient(circle,
-              rgba(255, 215, 0, 0.4) 0%,   /* golden center */
-              rgba(255, 69, 58, 0.3) 60%, /* red blend */
-              transparent 100%);
+      rgba(255, 215, 0, 0.4) 0%,
+      /* golden center */
+      rgba(255, 69, 58, 0.3) 60%,
+      /* red blend */
+      transparent 100%);
   animation: pulseGlow 7s ease-in-out infinite;
-  pointer-events: none; /* so clicks still work */
+  pointer-events: none;
+  /* so clicks still work */
 }
 
 /* === Corner Positions === */
-.card-glow .glow-tl { top: 2rem; left: 2rem; }
-.card-glow .glow-tr { top: 2rem; right: 2rem; }
-.card-glow .glow-bl { bottom: 2rem; left: 2rem; }
-.card-glow .glow-br { bottom: 2rem; right: 2rem; }
+.card-glow .glow-tl {
+  top: 2rem;
+  left: 2rem;
+}
+
+.card-glow .glow-tr {
+  top: 2rem;
+  right: 2rem;
+}
+
+.card-glow .glow-bl {
+  bottom: 2rem;
+  left: 2rem;
+}
+
+.card-glow .glow-br {
+  bottom: 2rem;
+  right: 2rem;
+}
 
 /* Soft pulsing */
 @keyframes pulseGlow {
-  0%, 100% { transform: scale(1); opacity: 0.7; }
-  50%      { transform: scale(1.3); opacity: 1; }
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
 }
 
 
 /* === Base for cards with FLOATING corner glows === */
 .card-glow-float {
   position: relative;
-  overflow: hidden; /* keep glows inside card */
+  overflow: hidden;
+  /* keep glows inside card */
 }
 
 /* === Glow Circle Base (Floating) === */
@@ -44,35 +72,68 @@
   height: 8rem;
   border-radius: 50%;
   background: radial-gradient(circle,
-              rgba(255, 215, 0, 0.45) 0%,   /* golden center */
-              rgba(255, 69, 58, 0.35) 65%,  /* red edge */
-              transparent 100%);
+      rgba(255, 215, 0, 0.45) 0%,
+      /* golden center */
+      rgba(255, 69, 58, 0.35) 65%,
+      /* red edge */
+      transparent 100%);
   pointer-events: none;
   z-index: 0;
   animation: floatY 5s ease-in-out infinite;
 }
 
 /* === Corner Positions (Floating) === */
-.card-glow-float .glow-float-tl { top: 2.5rem; left: 2.5rem; animation-delay: 0s; }
-.card-glow-float .glow-float-tr { top: 2.5rem; right: 2.5rem; animation-delay: 1s; }
-.card-glow-float .glow-float-bl { bottom: 2.5rem; left: 2.5rem; animation-delay: 2s; }
-.card-glow-float .glow-float-br { bottom: 2.5rem; right: 2.5rem; animation-delay: 3s; }
+.card-glow-float .glow-float-tl {
+  top: 2.5rem;
+  left: 2.5rem;
+  animation-delay: 0s;
+}
+
+.card-glow-float .glow-float-tr {
+  top: 2.5rem;
+  right: 2.5rem;
+  animation-delay: 1s;
+}
+
+.card-glow-float .glow-float-bl {
+  bottom: 2.5rem;
+  left: 2.5rem;
+  animation-delay: 2s;
+}
+
+.card-glow-float .glow-float-br {
+  bottom: 2.5rem;
+  right: 2.5rem;
+  animation-delay: 3s;
+}
 
 /* === Floating Up and Down === */
 @keyframes floatY {
-  0%, 100% { transform: translateY(0); opacity: 0.7; }
-  50%      { transform: translateY(-12px); opacity: 1; }
+
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: translateY(-12px);
+    opacity: 1;
+  }
 }
 
 
 /* === Base Gradient Background === */
 .bg-main {
-  position: relative;        /* required for ::before patterns */
+  position: relative;
+  /* required for ::before patterns */
   /* min-height: 100vh;         so it covers whole screen */
   background: linear-gradient(135deg,
-              rgba(255, 215, 0, 0.25) 0%,   /* golden bottom-left */
-              rgba(220, 20, 60, 0.25) 100%  /* reddish top-right */
-            );
+      rgba(255, 215, 0, 0.25) 0%,
+      /* golden bottom-left */
+      rgba(220, 20, 60, 0.25) 100%
+      /* reddish top-right */
+    );
   /* overflow: hidden; */
   z-index: 0;
 }
@@ -81,13 +142,16 @@
   content: "";
   position: absolute;
   inset: 0;
-  z-index: -1;              /* stay behind cards/content */
-  pointer-events: none;     /* let clicks pass through */
+  z-index: -1;
+  /* stay behind cards/content */
+  pointer-events: none;
+  /* let clicks pass through */
 }
 
 .page-content {
   position: relative;
-  z-index: 1;     /* ensures content is above background */
+  z-index: 1;
+  /* ensures content is above background */
   pointer-events: auto;
 }
 
@@ -97,16 +161,20 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  background-image: radial-gradient(rgba(255,255,255,0.08) 2px, transparent 2px);
-  background-size: 30px 30px;   /* adjust spacing */
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 2px, transparent 2px);
+  background-size: 30px 30px;
+  /* adjust spacing */
 }
 
 .sticky-controls {
   position: sticky;
   top: 0;
-  z-index: 10; /* above background */
-  background: inherit; /* respects dark/light */
-  backdrop-filter: blur(4px); /* optional, nice glass effect */
+  z-index: 10;
+  /* above background */
+  background: inherit;
+  /* respects dark/light */
+  backdrop-filter: blur(4px);
+  /* optional, nice glass effect */
 }
 
 
@@ -115,12 +183,13 @@
   position: relative;
   overflow: hidden;
 }
+
 .card-grid-overlay::before {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(rgba(255,0,0,0.05) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(255,0,0,0.05) 1px, transparent 1px);
+  background-image: linear-gradient(rgba(255, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.05) 1px, transparent 1px);
   background-size: 20px 20px;
   opacity: 0.6;
   pointer-events: none;
@@ -137,6 +206,7 @@
   box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
   transition: 0.3s ease;
 }
+
 .card-glow-border:hover {
   box-shadow: 0 0 25px rgba(255, 0, 0, 0.6);
 }
@@ -154,26 +224,29 @@
   left: -150%;
   width: 200%;
   height: 100%;
-  background: linear-gradient(
-    120deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.25) 40%,
-    rgba(255, 255, 255, 0.4) 50%,
-    rgba(255, 255, 255, 0.25) 60%,
-    transparent 100%
-  );
+  background: linear-gradient(120deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.25) 40%,
+      rgba(255, 255, 255, 0.4) 50%,
+      rgba(255, 255, 255, 0.25) 60%,
+      transparent 100%);
   animation: shimmer 2.5s infinite;
 }
 
 @keyframes shimmer {
-  0% { left: -150%; }
-  100% { left: 100%; }
+  0% {
+    left: -150%;
+  }
+
+  100% {
+    left: 100%;
+  }
 }
 
 
 /* === 5. Soft Gradient Overlay === */
 .card-gradient-overlay {
-  background: linear-gradient(135deg, rgba(255,0,0,0.08), rgba(255,215,0,0.08));
+  background: linear-gradient(135deg, rgba(255, 0, 0, 0.08), rgba(255, 215, 0, 0.08));
 }
 
 /* === 6. Floating Particles === */
@@ -181,6 +254,7 @@
   position: relative;
   overflow: hidden;
 }
+
 .card-particles::before,
 .card-particles::after {
   content: "";
@@ -191,15 +265,28 @@
   border-radius: 50%;
   animation: particleFloat 8s infinite ease-in-out;
 }
+
 .card-particles::after {
   top: 20%;
   left: 30%;
   animation-delay: 4s;
 }
+
 @keyframes particleFloat {
-  0% { transform: translateY(0) scale(1); opacity: 0.4; }
-  50% { transform: translateY(-15px) scale(1.2); opacity: 0.8; }
-  100% { transform: translateY(0) scale(1); opacity: 0.4; }
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.4;
+  }
+
+  50% {
+    transform: translateY(-15px) scale(1.2);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.4;
+  }
 }
 
 /* === 7. Diagonal Stripes Overlay === */
@@ -207,17 +294,16 @@
   position: relative;
   overflow: hidden;
 }
+
 .card-stripes::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: repeating-linear-gradient(
-    45deg,
-    rgba(255,0,0,0.05),
-    rgba(255,0,0,0.05) 10px,
-    transparent 10px,
-    transparent 20px
-  );
+  background: repeating-linear-gradient(45deg,
+      rgba(255, 0, 0, 0.05),
+      rgba(255, 0, 0, 0.05) 10px,
+      transparent 10px,
+      transparent 20px);
   pointer-events: none;
 }
 
@@ -225,23 +311,31 @@
 .card-pulse-bg {
   animation: pulseBg 6s infinite alternate;
 }
+
 @keyframes pulseBg {
-  0% { background-color: rgba(255, 0, 0, 0.05); }
-  100% { background-color: rgba(255, 0, 0, 0.15); }
+  0% {
+    background-color: rgba(255, 0, 0, 0.05);
+  }
+
+  100% {
+    background-color: rgba(255, 0, 0, 0.15);
+  }
 }
 
 /* === Light Mode: Brighter Subtle Red === */
 .bg-light-red {
   background: radial-gradient(circle at top left, rgba(255, 0, 0, 0.20), transparent 70%),
-              radial-gradient(circle at bottom right, rgba(255, 250, 100, 0.20), transparent 70%),
-              rgba(255, 230, 230, 0.9); /* soft warm red base */
-  color: #212529 !important; /* ensure readable text */
+    radial-gradient(circle at bottom right, rgba(255, 250, 100, 0.20), transparent 70%),
+    rgba(255, 230, 230, 0.9);
+  /* soft warm red base */
+  color: #212529 !important;
+  /* ensure readable text */
 }
 
 .bg-dark-glow {
-  background: radial-gradient(circle at top left, rgba(255,0,0,0.15), transparent 70%),
-              radial-gradient(circle at bottom right, rgba(255,215,0,0.15), transparent 70%),
-              #212529;
+  background: radial-gradient(circle at top left, rgba(255, 0, 0, 0.15), transparent 70%),
+    radial-gradient(circle at bottom right, rgba(255, 215, 0, 0.15), transparent 70%),
+    #212529;
   color: white !important;
 }
 
@@ -256,7 +350,8 @@
   opacity: 0;
   visibility: hidden;
   position: absolute;
-  bottom: 65px; /* sits above profile image */
+  bottom: 65px;
+  /* sits above profile image */
   left: 50%;
   transform: translateX(-50%) translateY(10px);
   background-color: #212529;
@@ -308,12 +403,14 @@
 
 /* Portal tooltip container */
 .review-tooltip-portal {
-  background: #212529;                 /* dark card */
+  background: #212529;
+  /* dark card */
   color: #fff;
   padding: 12px 14px;
   border-radius: 12px;
-  border: 1px solid #ffdf91;           /* golden edge */
-  box-shadow: 0 12px 28px rgba(0,0,0,0.35);
+  border: 1px solid #ffdf91;
+  /* golden edge */
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
   text-align: center;
   pointer-events: auto;
 }
@@ -324,8 +421,12 @@
   transform: translateX(-50%) translateY(6px);
   animation: tooltipIn 160ms ease-out forwards;
 }
+
 @keyframes tooltipIn {
-  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
 /* arrow (default: pointing DOWN from the box to the avatar) */
@@ -333,7 +434,8 @@
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  width: 0; height: 0;
+  width: 0;
+  height: 0;
 }
 
 /* When tooltip is above the avatar */
@@ -341,7 +443,8 @@
   bottom: -10px;
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
-  border-top: 10px solid #212529;     /* triangle pointing down */
+  border-top: 10px solid #212529;
+  /* triangle pointing down */
 }
 
 /* When tooltip is below the avatar */
@@ -349,32 +452,40 @@
   top: -10px;
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
-  border-bottom: 10px solid #212529;  /* triangle pointing up */
+  border-bottom: 10px solid #212529;
+  /* triangle pointing up */
 }
 
 /* Optional: inner content helpers */
 .review-tooltip-avatar {
-  width: 44px; height: 44px; object-fit: cover;
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
   border-radius: 50%;
   border: 2px solid #ffdf91;
   margin-bottom: 8px;
 }
+
 .review-tooltip-name {
   font-weight: 700;
   margin: 0 0 4px 0;
 }
+
 .review-tooltip-about {
   margin: 0;
   font-size: 0.85rem;
   opacity: 0.9;
 }
+
 .review-tooltip-background-dark {
-  background: #212529;     /* dark background */
+  background: #212529;
+  /* dark background */
   color: #fff;
 }
 
 .review-tooltip-background-light {
-  background: rgb(239, 54, 91);        /* light background */
+  background: rgb(239, 54, 91);
+  /* light background */
   color: #333;
 }
 
@@ -384,7 +495,8 @@
   border-bottom: 2px solid transparent;
   padding: 0.5rem 0.75rem;
   font-weight: 500;
-  color: white; /* default text */
+  color: white;
+  /* default text */
 }
 
 /* Hover/focus effect */
@@ -398,14 +510,17 @@
 
 /* Active page link */
 .navbar-nav .nav-link.active-link {
-  color: #ffc400;             /* golden color */
-  border-bottom-color: #ffc400; /* underline */
+  color: #ffc400;
+  /* golden color */
+  border-bottom-color: #ffc400;
+  /* underline */
   font-weight: 600;
 }
 
 /* --- DARK MODE OVERRIDE --- */
 .navbar-nav .nav-link.dark-mode {
-  color: #13f4ff; /* cyan */
+  color: #13f4ff;
+  /* cyan */
 }
 
 /* Hover/focus effect in dark mode (keeps same as light mode) */
@@ -450,7 +565,7 @@
 /* Navbar padding and spacing for better feel */
 .navbar {
   padding: 1.5rem 2.5rem;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
   border-bottom: 2px solid #FFD700;
 }
 
@@ -466,25 +581,38 @@
 }
 
 /* Responsive adjustments for smaller screens */
-@media (max-width: 767.98px) {
+@media (max-width: 1024px) {
   .navbar {
     padding: 1rem 1.5rem;
   }
+
   .navbar-nav .nav-item {
-    margin-left: 0.5rem;
+    margin-left: -0.5rem;
     margin-right: 0.5rem;
   }
+
   .navbar .search-container {
     min-width: 100%;
     margin-right: 0;
     margin-bottom: 0.75rem;
   }
+
+  /* Fix: Remove padding in navbar collapse */
+  #navbarNav {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .navbar-nav {
+    margin-left: 0 !important;
+  }
 }
+
 
 .text-link-hover {
   color: white;
 }
 
 .text-link-hover:hover {
-  color:#FFD700;
+  color: #FFD700;
 }

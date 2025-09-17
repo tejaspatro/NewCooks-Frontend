@@ -74,7 +74,7 @@ export default function Homepage({ darkMode }) {
     autoplaySpeed: 5000,
     pauseOnHover: true,
     responsive: [
-      { breakpoint: 768, settings: { slidesToShow: 1, centerMode: false } }
+      { breakpoint: 1024, settings: { slidesToShow: 2, centerMode: false } }, { breakpoint: 500, settings: { slidesToShow: 1, centerMode: false } }
     ],
   };
 
@@ -110,12 +110,49 @@ export default function Homepage({ darkMode }) {
         if (result.isConfirmed) {
           window.location.href = "/login";
         }
-        else{
+        else {
           window.location.href = "/user/favorites";
         }
       });
     }
   };
+
+  const CustomizedAxisTick = ({ x, y, payload, darkMode }) => {
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 850);
+
+    useEffect(() => {
+      const handleResize = () => setIsMobile(window.innerWidth < 850);
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    // For mobile view, we use a group <g> to rotate the text properly
+    if (isMobile) {
+      return (
+        <g transform={`translate(${x},${y})`}>
+          <text
+            x={28}
+            y={0}
+            dy={16}
+            textAnchor="end"
+            fill={darkMode ? "#eee" : "#333"}
+            transform="rotate(-10)"
+            fontSize={7}
+          >
+            {payload.value}
+          </text>
+        </g>
+      );
+    }
+
+    // For desktop view, we render the text normally
+    return (
+      <text x={x} y={y + 16} textAnchor="middle" fill={darkMode ? "#eee" : "#333"} fontSize={12}>
+        {payload.value}
+      </text>
+    );
+  };
+
 
 
   return (
@@ -181,19 +218,20 @@ export default function Homepage({ darkMode }) {
             style={{
               color: darkMode ? "#fc4759f0" : "#dc3545",
               fontWeight: 800,
-              fontSize: "3.5rem",
+              fontSize: window.innerWidth < 768 ? "2.2rem" : "3.5rem",   // Responsive font size
               textShadow: "2px 2px 8px rgba(0,0,0,0.3)",
               marginTop: "1.0rem"
             }}
           >
             Ready to Discover, NewCook?
           </h1>
+
           <h3
             className="mb-4"
             style={{
               color: "#ff8c00ff",
               fontWeight: 600,
-              fontSize: "1.95rem",
+              fontSize: window.innerWidth < 768 ? "1.4rem" : "1.95rem",  // Responsive font size
               textShadow: "1px 1px 6px rgba(0,0,0,0.1)",
               marginTop: "2.0rem"
             }}
@@ -201,11 +239,14 @@ export default function Homepage({ darkMode }) {
             Find your next favorite dish!
           </h3>
 
-          {/* Buttons */}
-          <div className="d-flex justify-content-center gap-3 mb-4" style={{ marginTop: "2.55rem" }}>
+          <div
+            className="d-flex justify-content-center gap-3 mb-4 flex-wrap"   // allow wrapping on small screens
+            style={{ marginTop: "2.55rem" }}
+          >
             <Link to="/recipes" className="btn btn-primary px-4 py-2 text-white hero-btn">
               Browse Recipes
             </Link>
+
             <Link
               to="/user/favorites"
               className="btn btn-warning px-4 py-2 hero-btn"
@@ -213,10 +254,8 @@ export default function Homepage({ darkMode }) {
             >
               Your Favorites
             </Link>
-
           </div>
 
-          {/* Divider with pan icon and smoke */}
           <div className="chef-divider d-flex align-items-center justify-content-center mt-5">
             <div className="divider-line"></div>
             <div className="pan-container">
@@ -230,6 +269,7 @@ export default function Homepage({ darkMode }) {
             <div className="divider-line"></div>
           </div>
         </div>
+
 
         <h2 style={{ color: darkMode ? "#fde300ff" : "#ff005dff", marginTop: "-2rem" }} className="fw-bold text-center mb-4">
           Most Viewed Recipes
@@ -308,7 +348,7 @@ export default function Homepage({ darkMode }) {
                 margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="title" />
+                <XAxis dataKey="title" interval={0} tick={<CustomizedAxisTick darkMode={darkMode} />} />
                 <YAxis />
                 <Tooltip />
                 <Bar dataKey="totalReviews" fill="#FF005D" radius={[5, 5, 0, 0]} />

@@ -87,9 +87,11 @@ export default function UserRecipeDetailPage({ darkMode }) {
           position: "relative",
           display: "flex",
           alignItems: "center",
+          justifyContent: "space-between",
           padding: "0.5rem 1rem",
           background: "inherit",
           zIndex: 1000,
+          flexWrap: "wrap",  // Allows wrapping on small screens
         }}
       >
         {/* Left: Go Back Button */}
@@ -103,24 +105,22 @@ export default function UserRecipeDetailPage({ darkMode }) {
         <h1
           className={`${darkMode ? "text-deep-yellow" : "text-danger"}`}
           style={{
-            fontSize: "2.5rem",
+            fontSize: "2rem",
             fontWeight: "bold",
-            margin: 0,
-            position: "absolute",
-            left: "50%",
-            transform: "translateX(-50%)",
+            margin: "0 auto",
+            textAlign: "center",
+            whiteSpace: "nowrap",
           }}
         >
           {recipe.title}
         </h1>
 
         {/* Right: Heart Icon */}
-        <div style={{ marginLeft: "auto" }}>
-          <div style={{ cursor: "pointer", flexShrink: 0 }}>
-            <HeartToggle recipeId={recipe.recipeId} darkMode={darkMode} />
-          </div>
+        <div style={{ cursor: "pointer", flexShrink: 0 }}>
+          <HeartToggle recipeId={recipe.recipeId} darkMode={darkMode} />
         </div>
       </div>
+
 
 
       {/* Recipe Details */}

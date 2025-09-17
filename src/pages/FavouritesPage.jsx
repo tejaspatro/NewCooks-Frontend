@@ -13,8 +13,8 @@ export default function FavoritesPage({ darkMode }) {
 
     const showCustomLoader = (message = "Loading recipe details...") => {
         Swal.fire({
-          title: 'Loading...',
-          html: `
+            title: 'Loading...',
+            html: `
         <div class="cooking-loader">
           <div class="pot">
             <div class="lid"></div>
@@ -28,18 +28,18 @@ export default function FavoritesPage({ darkMode }) {
           </div>
         </div>
       `,
-          showConfirmButton: false,
-          allowOutsideClick: false,
-          background: '#ff6d6dff',  // Dark background color
-          color: '#fff',       // White text color
-          didOpen: () => {
-            Swal.showLoading();
-          }
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            background: '#ff6d6dff',  // Dark background color
+            color: '#fff',       // White text color
+            didOpen: () => {
+                Swal.showLoading();
+            }
         });
-    
-      };
-    
-      const closeCustomLoader = () => Swal.close();
+
+    };
+
+    const closeCustomLoader = () => Swal.close();
 
     useEffect(() => {
         async function fetchFavorites() {
@@ -50,7 +50,7 @@ export default function FavoritesPage({ darkMode }) {
                 setRecipes(res.data);
             } catch (err) {
                 setError("Failed to fetch favorite recipes.");
-            } finally{
+            } finally {
                 closeCustomLoader();
             }
         }
@@ -115,18 +115,20 @@ export default function FavoritesPage({ darkMode }) {
 
                 {/* Center: Title */}
                 <h1
-                    className={`${darkMode ? "text-deep-yellow" : "text-danger"}`}
+                    className={`text-center ${darkMode ? "text-deep-yellow" : "text-danger"}`}
                     style={{
                         fontSize: "2.5rem",
                         fontWeight: "bold",
-                        margin: 0,
-                        position: "absolute",
-                        left: "50%",
-                        transform: "translateX(-50%)",
+                        margin: "auto",  // Use auto left & right margins
+                        display: "block",     // Ensure it behaves as a block element
+                        textAlign: "center",
+                        transform: "translateX(-25px)",
                     }}
                 >
                     Favorite Recipes
                 </h1>
+
+
             </div>
 
 

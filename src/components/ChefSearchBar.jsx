@@ -43,7 +43,7 @@ export default function ChefSearchBar() {
   }, []);
 
   return (
-    <div ref={containerRef} style={{ position: "relative", width: "250px" }}>
+    <div ref={containerRef} style={{ position: "relative", width: "200px" }}>
       <input
         type="search"
         className="form-control"

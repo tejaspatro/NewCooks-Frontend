@@ -54,9 +54,47 @@ export default function ChefHero({ darkMode }) {
     autoplaySpeed: 5000,
     pauseOnHover: true,
     responsive: [
-      { breakpoint: 768, settings: { slidesToShow: 1, centerMode: false } }
+      { breakpoint: 1024, settings: { slidesToShow: 2, centerMode: false } },
+      { breakpoint: 500, settings: { slidesToShow: 1, centerMode: false } }
     ],
   };
+
+  const CustomizedAxisTick = ({ x, y, payload, darkMode }) => {
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 850);
+
+    useEffect(() => {
+      const handleResize = () => setIsMobile(window.innerWidth < 850);
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    // For mobile view, we use a group <g> to rotate the text properly
+    if (isMobile) {
+      return (
+        <g transform={`translate(${x},${y})`}>
+          <text
+            x={28}
+            y={0}
+            dy={16}
+            textAnchor="end"
+            fill={darkMode ? "#eee" : "#333"}
+            transform="rotate(-10)"
+            fontSize={7}
+          >
+            {payload.value}
+          </text>
+        </g>
+      );
+    }
+
+    // For desktop view, we render the text normally
+    return (
+      <text x={x} y={y + 16} textAnchor="middle" fill={darkMode ? "#eee" : "#333"} fontSize={12}>
+        {payload.value}
+      </text>
+    );
+  };
+
 
 
   return (
@@ -118,32 +156,30 @@ export default function ChefHero({ darkMode }) {
       <section className={`${darkMode ? "dark-mode" : ""} chef-homepage-reviews container-fluid py-5 `}>
         <div className="text-center mb-5">
           <h1
-            className="mb-2"
+            className="mb-2 text-center hero-heading"
             style={{
               color: darkMode ? "#fc4759f0" : "#dc3545",
               fontWeight: 800,
-              fontSize: "3.5rem",
               textShadow: "2px 2px 8px rgba(0,0,0,0.3)",
-              marginTop: "1.0rem"
+              marginTop: "1.0rem",
             }}
           >
             Ready to Cook, Chef?
           </h1>
+
           <h3
-            className="mb-4"
+            className="mb-4 text-center hero-subheading"
             style={{
               color: "#ff8c00ff",
               fontWeight: 600,
-              fontSize: "1.95rem",
               textShadow: "1px 1px 6px rgba(0,0,0,0.1)",
-              marginTop: "2.0rem"
+              marginTop: "2.0rem",
             }}
           >
             Let’s whip up something <br /> amazing today!
           </h3>
 
-          {/* Buttons */}
-          <div className="d-flex justify-content-center gap-3 mb-4" style={{ marginTop: "2.55rem" }}>
+          <div className="d-flex justify-content-center gap-3 mb-4 flex-wrap" style={{ marginTop: "2.55rem" }}>
             <Link to="/chef/recipes/add" className="btn btn-primary px-4 py-2 text-white hero-btn">
               Add a Recipe
             </Link>
@@ -151,6 +187,7 @@ export default function ChefHero({ darkMode }) {
               Your Recipes
             </Link>
           </div>
+
 
           {/* Divider with pan icon and smoke */}
           <div className="chef-divider d-flex align-items-center justify-content-center mt-5">
@@ -237,7 +274,7 @@ export default function ChefHero({ darkMode }) {
                 margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="title" />
+                <XAxis dataKey="title" interval={0} tick={<CustomizedAxisTick darkMode={darkMode} />} />
                 <YAxis />
                 <Tooltip />
                 <Bar dataKey="totalReviews" fill="#FF005D" radius={[5, 5, 0, 0]} />

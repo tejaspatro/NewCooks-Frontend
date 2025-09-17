@@ -196,6 +196,9 @@
   text-align: center;
   overflow: hidden;
   transform-style: preserve-3d;
+  margin: auto;
+  width: auto;
+  max-width: 100%;
 }
 
 /* Card colors */
@@ -673,4 +676,42 @@
 .help-grid-dark .help-card p,
 .help-grid-dark .help-card a {
   color: #f8f8f8 !important;
+}
+/* FIX FOR SLIDER ON MOBILE */
+@media (max-width: 1024px) {
+  .chef-homepage-reviews-slider .slick-slide {
+    padding-left: 8px;   /* Reduce side padding */
+    padding-right: 8px;  /* Reduce side padding */
+  }
+}
+
+/* Responsive typography */
+@media (max-width: 768px) {
+  .hero-heading {
+    font-size: 2rem !important;
+  }
+
+  .hero-subheading {
+    font-size: 1.2rem !important;
+  }
+
+  .hero-btn {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .hero-heading {
+    font-size: 1.75rem !important;
+  }
+
+  .hero-subheading {
+    font-size: 1rem !important;
+  }
+
+  .d-flex.justify-content-center.gap-3 {
+    flex-direction: column;
+    gap: 1rem;
+  }
 }

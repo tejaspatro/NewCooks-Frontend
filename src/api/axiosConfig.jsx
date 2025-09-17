@@ -2,7 +2,8 @@ import axios from 'axios';
 
 // Create a new Axios instance with your backend's base URL
 const axiosApi = axios.create({
-  baseURL: 'https://newcooksbackend-latest-1.onrender.com', // Your Render backend URL
+  baseURL: 'https://newcooksbackend-latest-1.onrender.com', // Render backend URL
+  // baseURL: 'http://localhost:8080/newcooks', // localhost backend URL
   headers: {
     'Content-Type': 'application/json',
   },
